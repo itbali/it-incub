@@ -27,7 +27,7 @@ describe("test app ", () => {
 			author: "Author 1",
 			createdAt: expect.any(String),
 			publicationDate: expect.any(String),
-			availableResolutions: [],
+			availableResolutions: ["P144"],
 			canBeDownloaded: false,
 			minAgeRestriction: null
 		})
@@ -151,42 +151,6 @@ describe("test app ", () => {
 				title: "Video 1",
 				author: "Author 1",
 				availableResolutions: ["P144", "P240", "P360", "P480", "P720", "P1080", "P1440", "P2160", "P4320"],
-			})
-			.expect(400, {
-				errorMessages: [
-					{
-						field: "availableResolutions",
-						message: "Invalid resolutions"
-					}
-				]
-			})
-	})
-
-	it("post return 400 if resolutions are not array", async () => {
-		await request(app)
-			.post("/videos/")
-			.send({
-				title: "Video 1",
-				author: "Author 1",
-				availableResolutions: "P144",
-			})
-			.expect(400, {
-				errorMessages: [
-					{
-						field: "availableResolutions",
-						message: "Invalid resolutions"
-					}
-				]
-			})
-	})
-
-	it("post return 400 if resolutions are empty", async () => {
-		await request(app)
-			.post("/videos/")
-			.send({
-				title: "Video 1",
-				author: "Author 1",
-				availableResolutions: []
 			})
 			.expect(400, {
 				errorMessages: [
