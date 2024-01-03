@@ -33,17 +33,17 @@ app.post("/videos", (req: RequestWithBody<CreateVideoRequest>, res: Response) =>
     let {title, author, availableResolutions} = req.body;
 
     let error: Error = {
-        errorMessages: []
+        errorsMessages: []
     }
 
     if (typeof title !== "string" || !title?.trim() || title.length > 40) {
-        error.errorMessages.push({
+        error.errorsMessages.push({
             message: "Invalid title",
             field: "title",
         })
     }
     if (typeof author !== "string" || !author?.trim() || author.length > 20) {
-        error.errorMessages.push({
+        error.errorsMessages.push({
             message: "Invalid author",
             field: "author",
         })
@@ -54,7 +54,7 @@ app.post("/videos", (req: RequestWithBody<CreateVideoRequest>, res: Response) =>
                 resolution => Object.values(Resolution).includes(resolution)
             )
         ) {
-            error.errorMessages.push({
+            error.errorsMessages.push({
                 message: "Invalid resolutions",
                 field: "availableResolutions",
             });
@@ -63,7 +63,7 @@ app.post("/videos", (req: RequestWithBody<CreateVideoRequest>, res: Response) =>
         availableResolutions = [];
     }
 
-    if (error.errorMessages.length) {
+    if (error.errorsMessages.length) {
         res.status(400).send(error)
         return;
     }
@@ -96,34 +96,34 @@ app.put("/videos/:id", (req: RequestWithParamsAndBody<{ id: string }, UpdateVide
     let {title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate} = req.body;
 
     let error: Error = {
-        errorMessages: []
+        errorsMessages: []
     }
     if (minAgeRestriction !== undefined && (typeof minAgeRestriction !== "number" || minAgeRestriction < 1 || minAgeRestriction > 18)) {
-        error.errorMessages.push({
+        error.errorsMessages.push({
             message: "Invalid min age restriction",
             field: "minAgeRestriction",
         })
     }
     if (publicationDate && typeof publicationDate !== "string") {
-        error.errorMessages.push({
+        error.errorsMessages.push({
             message: "Invalid publication date",
             field: "publicationDate",
         })
     }
     if (typeof title !== "string" || !title?.trim() || title.length > 40) {
-        error.errorMessages.push({
+        error.errorsMessages.push({
             message: "Invalid title",
             field: "title",
         })
     }
     if (canBeDownloaded && typeof canBeDownloaded !== "boolean") {
-        error.errorMessages.push({
+        error.errorsMessages.push({
             message: "Invalid can be downloaded",
             field: "canBeDownloaded",
         })
     }
     if (typeof author !== "string" || !author?.trim() || author.length > 20) {
-        error.errorMessages.push({
+        error.errorsMessages.push({
             message: "Invalid author",
             field: "author",
         })
@@ -134,13 +134,13 @@ app.put("/videos/:id", (req: RequestWithParamsAndBody<{ id: string }, UpdateVide
             resolution => Object.values(Resolution).includes(resolution)
         )
     ) {
-        error.errorMessages.push({
+        error.errorsMessages.push({
             message: "Invalid resolutions",
             field: "availableResolutions",
         });
     }
 
-    if (error.errorMessages.length) {
+    if (error.errorsMessages.length) {
         res.status(400).send(error)
         return;
     }
