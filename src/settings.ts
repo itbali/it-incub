@@ -38,14 +38,14 @@ app.post("/videos", (req: RequestWithBody<CreateVideoRequest>, res: Response) =>
 
     if (typeof title !== "string" || !title?.trim() || title.length > 40) {
         error.errorMessages.push({
+            message: "Invalid title",
             field: "title",
-            message: "Invalid title"
         })
     }
     if (typeof author !== "string" || !author?.trim() || author.length > 20) {
         error.errorMessages.push({
+            message: "Invalid author",
             field: "author",
-            message: "Invalid author"
         })
     }
     if (Array.isArray(availableResolutions)) {
@@ -55,8 +55,8 @@ app.post("/videos", (req: RequestWithBody<CreateVideoRequest>, res: Response) =>
             )
         ) {
             error.errorMessages.push({
+                message: "Invalid resolutions",
                 field: "availableResolutions",
-                message: "Invalid resolutions"
             });
         }
     } else {
@@ -98,38 +98,34 @@ app.put("/videos/:id", (req: RequestWithParamsAndBody<{ id: string }, UpdateVide
     let error: Error = {
         errorMessages: []
     }
-
-    if (canBeDownloaded && typeof canBeDownloaded !== "boolean") {
-        error.errorMessages.push({
-            field: "canBeDownloaded",
-            message: "Invalid can be downloaded"
-        })
-    }
-
     if (minAgeRestriction !== undefined && (typeof minAgeRestriction !== "number" || minAgeRestriction < 1 || minAgeRestriction > 18)) {
         error.errorMessages.push({
+            message: "Invalid min age restriction",
             field: "minAgeRestriction",
-            message: "Invalid min age restriction"
         })
     }
-
     if (publicationDate && typeof publicationDate !== "string") {
         error.errorMessages.push({
+            message: "Invalid publication date",
             field: "publicationDate",
-            message: "Invalid publication date"
         })
     }
-
     if (typeof title !== "string" || !title?.trim() || title.length > 40) {
         error.errorMessages.push({
+            message: "Invalid title",
             field: "title",
-            message: "Invalid title"
+        })
+    }
+    if (canBeDownloaded && typeof canBeDownloaded !== "boolean") {
+        error.errorMessages.push({
+            message: "Invalid can be downloaded",
+            field: "canBeDownloaded",
         })
     }
     if (typeof author !== "string" || !author?.trim() || author.length > 20) {
         error.errorMessages.push({
+            message: "Invalid author",
             field: "author",
-            message: "Invalid author"
         })
     }
     if (!Array.isArray(availableResolutions) ||
@@ -139,8 +135,8 @@ app.put("/videos/:id", (req: RequestWithParamsAndBody<{ id: string }, UpdateVide
         )
     ) {
         error.errorMessages.push({
+            message: "Invalid resolutions",
             field: "availableResolutions",
-            message: "Invalid resolutions"
         });
     }
 
