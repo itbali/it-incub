@@ -201,7 +201,7 @@ describe("test app ", () => {
 	it("put return 204 and update video with correct data", async () => {
 		const videoId = (await request(app).get("/videos/")).body[0].id
 
-		request(app)
+		await request(app)
 			.put(`/videos/${videoId}`)
 			.send({
 				title: "New Video 1",
