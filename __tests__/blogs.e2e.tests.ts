@@ -4,7 +4,7 @@ import {app} from "../src/settings";
 describe("test app ", () => {
 
 	beforeAll(async () => {
-		await request(app).delete("/__test__")
+		await request(app).delete("/testing/all-data")
 	});
 
 	it("get return 200 and empty array", async () => {

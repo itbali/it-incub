@@ -180,11 +180,7 @@ app.delete("/videos/:id", (req: RequestWithParams<{id:string}>, res: Response) =
 	res.send(204);
 })
 
-app.delete("/__test__", (_req: Request, res: Response) => {
+app.delete("/testing/all-data", (_req: Request, res: Response) => {
 	videos.splice(0, videos.length);
 	res.status(204).send("All data is deleted");
 })
-
-const res = ["1","2","3"] as const
-
-type resType = typeof res[number]
