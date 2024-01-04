@@ -16,7 +16,7 @@ blogRoute.get("/", (_req: Request, res: Response) => {
 blogRoute.get("/:id", (req: Request<{ id: string }>, res: Response) => {
     const blog = BlogRepository.getBlogById(req.params.id);
     if (!blog) {
-        res.sendStatus(404)
+        res.send(404)
         return;
     }
     res.send(blog);
@@ -32,7 +32,7 @@ blogRoute.put("/:id", authMiddleware, blogValidation(true), inputModelValidation
     const {name, websiteUrl, description} = req.body;
     const blog = BlogRepository.updateBlog(req.params.id, name, websiteUrl, description)
     if (!blog) {
-        res.sendStatus(404)
+        res.send(404)
         return;
     }
     res.send(blog);
@@ -41,7 +41,7 @@ blogRoute.put("/:id", authMiddleware, blogValidation(true), inputModelValidation
 blogRoute.delete("/:id", authMiddleware, (req: Request<{ id: string }>, res: Response) => {
     const blog = BlogRepository.deleteBlog(req.params.id);
     if (!blog) {
-        res.sendStatus(404)
+        res.send(404)
         return;
     }
     res.send(blog);

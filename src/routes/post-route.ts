@@ -16,7 +16,7 @@ postRoute.get("/", (req, res) => {
 postRoute.get("/:id", (req: Request<{id: string}>, res) => {
     const post = PostRepository.getPostById(req.params.id);
     if (!post) {
-        res.sendStatus(404)
+        res.send(404)
         return;
     }
     res.send(post);
@@ -26,7 +26,7 @@ postRoute.post("/", authMiddleware, postValidation(), inputModelValidation, (req
     const {title, shortDescription, content, blogId} = req.body;
     const post = PostRepository.createPost(title, shortDescription, content, blogId)
     if (!post) {
-        res.sendStatus(404)
+        res.send(404)
         return;
     }
     res.send(post);
@@ -36,7 +36,7 @@ postRoute.put("/:id", authMiddleware, postValidation(true), inputModelValidation
     const {title, shortDescription, content, blogId} = req.body;
     const post = PostRepository.updatePost(req.params.id, title, shortDescription, content, blogId)
     if (!post) {
-        res.sendStatus(404)
+        res.send(404)
         return;
     }
     res.send(post);
@@ -45,7 +45,7 @@ postRoute.put("/:id", authMiddleware, postValidation(true), inputModelValidation
 postRoute.delete("/:id", authMiddleware, (req: Request<{id: string}>, res: Response) => {
     const post = PostRepository.deletePost(req.params.id);
     if (!post) {
-        res.sendStatus(404)
+        res.send(404)
         return;
     }
     res.send(post);
