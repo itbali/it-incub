@@ -9,7 +9,7 @@ app.use(express.json());
 app.use("/blogs", blogRoute)
 app.use("/posts", postRoute)
 
-app.delete("testing/all-data", (_req, res) => {
+app.delete("/testing/all-data", (_req, res) => {
     db.blogs = [];
     db.posts = [];
     res.sendStatus(204)
