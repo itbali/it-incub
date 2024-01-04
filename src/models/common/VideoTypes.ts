@@ -34,12 +34,3 @@ export type UpdateVideoRequest = {
 	minAgeRestriction?: number | null,
 	publicationDate?: string
 }
-
-export type ErrorMessages = {
-	field: string,
-	message: string
-}
-
-export type Error = {
-	errorsMessages: ErrorMessages[]
-}
