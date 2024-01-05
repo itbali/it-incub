@@ -1,5 +1,6 @@
 import {body} from "express-validator";
 import {BlogRepository} from "../repositories/blog-repository";
+import {inputModelValidation} from "../middlewares/input-model-validation/input-model-validation";
 
 const titleValidator = body('title')
     .trim()
@@ -31,9 +32,6 @@ const blogIdValidator = body('blogId')
     })
     .withMessage("Incorrect blogId");
 
-export const postValidation = (optional:boolean = false) => {
-    const validators = [titleValidator, shortDescriptionValidator, contentValidator, blogIdValidator];
-    return optional
-        ? validators.map(validator => validator.optional())
-        : validators;
+export const postValidation = () => {
+    return [titleValidator, shortDescriptionValidator, contentValidator, blogIdValidator, inputModelValidation];
 }

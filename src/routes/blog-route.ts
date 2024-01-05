@@ -4,7 +4,6 @@ import {RequestWithBody, RequestWithParamsAndBody} from "../models/common/Reques
 import {BlogCreateModel} from "../models/blogs/input";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {blogValidation} from "../validators/blog-validator";
-import {inputModelValidation} from "../middlewares/input-model-validation/input-model-validation";
 
 export const blogRoute = Router();
 
@@ -22,13 +21,13 @@ blogRoute.get("/:id", (req: Request<{ id: string }>, res: Response) => {
     res.send(blog);
 });
 
-blogRoute.post("/", authMiddleware, blogValidation(), inputModelValidation,(req: RequestWithBody<BlogCreateModel>, res: Response) => {
+blogRoute.post("/", authMiddleware, blogValidation(),(req: RequestWithBody<BlogCreateModel>, res: Response) => {
     const {name, websiteUrl, description} = req.body;
     const blog = BlogRepository.createBlog(name, websiteUrl, description)
     res.status(201).send(blog);
 });
 
-blogRoute.put("/:id", authMiddleware, blogValidation(true), inputModelValidation, (req: RequestWithParamsAndBody<{id:string},Partial<BlogCreateModel>>, res: Response) => {
+blogRoute.put("/:id", authMiddleware, blogValidation(), (req: RequestWithParamsAndBody<{id:string},Partial<BlogCreateModel>>, res: Response) => {
     const {name, websiteUrl, description} = req.body;
     const blog = BlogRepository.updateBlog(req.params.id, name, websiteUrl, description)
     if (!blog) {

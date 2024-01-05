@@ -4,7 +4,6 @@ import {RequestWithBody} from "../models/common/RequestTypes";
 import {PostCreateModel} from "../models/posts/input";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {postValidation} from "../validators/post-validator";
-import {inputModelValidation} from "../middlewares/input-model-validation/input-model-validation";
 
 export const postRoute = express.Router();
 
@@ -22,7 +21,7 @@ postRoute.get("/:id", (req: Request<{id: string}>, res) => {
     res.send(post);
 });
 
-postRoute.post("/", authMiddleware, postValidation(), inputModelValidation, (req: RequestWithBody<PostCreateModel>, res: Response) => {
+postRoute.post("/", authMiddleware, postValidation(), (req: RequestWithBody<PostCreateModel>, res: Response) => {
     const {title, shortDescription, content, blogId} = req.body;
     const post = PostRepository.createPost(title, shortDescription, content, blogId)
     if (!post) {
@@ -32,7 +31,7 @@ postRoute.post("/", authMiddleware, postValidation(), inputModelValidation, (req
     res.status(201).send(post);
 });
 
-postRoute.put("/:id", authMiddleware, postValidation(true), inputModelValidation, (req: Request<{id: string}>, res: Response) => {
+postRoute.put("/:id", authMiddleware, postValidation(), (req: Request<{id: string}>, res: Response) => {
     const {title, shortDescription, content, blogId} = req.body;
     const post = PostRepository.updatePost(req.params.id, title, shortDescription, content, blogId)
     if (!post) {
