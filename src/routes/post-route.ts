@@ -29,7 +29,7 @@ postRoute.post("/", authMiddleware, postValidation(), inputModelValidation, (req
         res.send(404)
         return;
     }
-    res.send(post);
+    res.status(201).send(post);
 });
 
 postRoute.put("/:id", authMiddleware, postValidation(true), inputModelValidation, (req: Request<{id: string}>, res: Response) => {
@@ -39,7 +39,7 @@ postRoute.put("/:id", authMiddleware, postValidation(true), inputModelValidation
         res.send(404)
         return;
     }
-    res.send(post);
+    res.send(204);
 });
 
 postRoute.delete("/:id", authMiddleware, (req: Request<{id: string}>, res: Response) => {
@@ -48,5 +48,5 @@ postRoute.delete("/:id", authMiddleware, (req: Request<{id: string}>, res: Respo
         res.send(404)
         return;
     }
-    res.send(post);
+    res.send(204);
 });
