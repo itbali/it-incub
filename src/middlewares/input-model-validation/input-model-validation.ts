@@ -16,7 +16,7 @@ export const inputModelValidation = (req: Request,res: Response, next: NextFunct
     });
 
     if(!formattedErrors.isEmpty()) {
-        const errors = formattedErrors.array({onlyFirstError: true});
+        const errors = formattedErrors.array();
         res.status(400).send({
             errorsMessages: errors
         });
