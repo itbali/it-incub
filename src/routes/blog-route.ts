@@ -25,7 +25,7 @@ blogRoute.get("/:id", (req: Request<{ id: string }>, res: Response) => {
 blogRoute.post("/", authMiddleware, blogValidation(), inputModelValidation,(req: RequestWithBody<BlogCreateModel>, res: Response) => {
     const {name, websiteUrl, description} = req.body;
     const blog = BlogRepository.createBlog(name, websiteUrl, description)
-    res.send(blog);
+    res.status(201).send(blog);
 });
 
 blogRoute.put("/:id", authMiddleware, blogValidation(true), inputModelValidation, (req: RequestWithParamsAndBody<{id:string},Partial<BlogCreateModel>>, res: Response) => {
@@ -35,7 +35,7 @@ blogRoute.put("/:id", authMiddleware, blogValidation(true), inputModelValidation
         res.send(404)
         return;
     }
-    res.send(blog);
+    res.send(204);
 });
 
 blogRoute.delete("/:id", authMiddleware, (req: Request<{ id: string }>, res: Response) => {
@@ -44,5 +44,5 @@ blogRoute.delete("/:id", authMiddleware, (req: Request<{ id: string }>, res: Res
         res.send(404)
         return;
     }
-    res.send(blog);
+    res.send(204);
 });
