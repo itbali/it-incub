@@ -1,6 +1,7 @@
 import {body} from "express-validator";
 
 const nameValidation = body('name')
+    .exists({ values: "falsy" })
     .trim()
     .isString()
     .isLength({min: 1, max: 15})

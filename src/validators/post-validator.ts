@@ -8,6 +8,7 @@ const titleValidator = body('title')
     .withMessage("Incorrect title");
 
 const shortDescriptionValidator = body('shortDescription')
+    .exists({ values: "falsy" })
     .trim()
     .isString()
     .isLength({min: 1, max: 100})
