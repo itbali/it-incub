@@ -1,14 +1,14 @@
 import express from "express";
 import {blogRoute} from "./routes/blog-route";
 import {postRoute} from "./routes/post-route";
-import {db} from "./db/db";
+import {blogsCollection, postsCollection} from "./db/db";
 
 export const app = express();
 app.use(express.json());
 
-app.delete("/testing/all-data", (_req, res) => {
-    db.blogs = [];
-    db.posts = [];
+app.delete("/testing/all-data", async (_req, res) => {
+    await blogsCollection.deleteMany({});
+    await postsCollection.deleteMany({});
     res.send(204)
 })
 

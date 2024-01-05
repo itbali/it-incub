@@ -1,44 +1,42 @@
-import {db} from "../db/db";
+import {blogsCollection} from "../db/db";
+import {BlogModel} from "../models/blogs/output";
+import {blogMapper} from "../models/blogs/mappers/blogMapper";
+import {ObjectId} from "mongodb";
+import {BlogCreateModel} from "../models/blogs/input";
 
 export class BlogRepository {
 
-    static getAllBlogs(){
-        return db.blogs;
+    static async getAllBlogs(): Promise<BlogModel[]>{
+        const blogs = await blogsCollection.find().toArray();
+        return blogs.map(blogMapper);
     }
 
-    static getBlogById(id: string){
-        return db.blogs.find(blog => blog.id === id);
+    static async getBlogById(id: string): Promise<BlogModel | null>{
+        const blog = await blogsCollection.findOne({_id: new ObjectId(id)});
+        return blog ? blogMapper(blog) : null;
     }
 
-    static createBlog(name: string, websiteUrl: string, description: string){
+    static async createBlog({name, websiteUrl, description}: BlogCreateModel): Promise<BlogModel>{
         const blog = {
-            id: Date.now().toString(),
             name,
             websiteUrl,
             description,
+            createdAt: new Date().toISOString(),
+            isMembership: false,
         }
-        db.blogs.push(blog);
-        return blog;
+        const createdBlog = await blogsCollection.insertOne(blog);
+        return {...blog, id: createdBlog.insertedId.toString()}
     }
 
-    static updateBlog(id: string, name?: string, websiteUrl?: string, description?: string){
-        const blog = db.blogs.find(blog => blog.id === id);
-        if(!blog) {
-            return null;
-        }
-        name && (blog.name = name);
-        websiteUrl && (blog.websiteUrl = websiteUrl);
-        description && (blog.description = description);
-        return blog;
+    static async updateBlog({id, name, websiteUrl, description}: BlogCreateModel &{id:string}): Promise<BlogModel | null>{
+        const blog = await blogsCollection.findOneAndUpdate(
+            {_id: new ObjectId(id)},
+            {$set:{description,name,websiteUrl}});
+        return blog ? blogMapper(blog) : null;
     }
 
-    static deleteBlog(id: string){
-        const blogIndex = db.blogs.findIndex(blog => blog.id === id);
-        if(blogIndex === -1) {
-            return null;
-        }
-        const blog = db.blogs[blogIndex];
-        db.blogs.splice(blogIndex, 1);
-        return blog;
+    static async deleteBlog(id: string): Promise<BlogModel | null>{
+        const blog = await blogsCollection.findOneAndDelete({_id: new ObjectId(id)});
+        return blog ? blogMapper(blog) : null;
     }
 }

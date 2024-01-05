@@ -25,8 +25,8 @@ const blogIdValidator = body('blogId')
     .trim()
     .isString()
     .custom(
-    (value: string)=>{
-        if (!BlogRepository.getBlogById(value)) {
+        async (value: string)=>{
+        if (!await BlogRepository.getBlogById(value)) {
             throw Error("Incorrect blogId");
         } return true;
     })

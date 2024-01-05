@@ -5,4 +5,6 @@ export type PostModel = {
     content: string,
     blogId: string,
     blogName: string,
+    createdAt: string,
+    isMembership: boolean,
 }
