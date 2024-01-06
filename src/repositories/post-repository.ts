@@ -18,7 +18,7 @@ export class PostRepository {
     static async createPost({title, shortDescription, content, blogId}: PostCreateModel): Promise<PostModel> {
         const blogName = (await blogsCollection.findOne({_id: new ObjectId(blogId)}))!.name;
         const post = { title, shortDescription, content, blogId, blogName, isMembership: false, createdAt: new Date().toISOString() }
-        const createdPost = await postsCollection.insertOne(post)
+        const createdPost = await postsCollection.insertOne({...post})
         return {...post, id: createdPost.insertedId.toString()}
     }
 

@@ -18,7 +18,7 @@ export class BlogRepository {
 
     static async createBlog({name, websiteUrl, description}: BlogCreateModel): Promise<BlogModel>{
         const blog = {name, websiteUrl, description, isMembership: false, createdAt: new Date().toISOString()}
-        const createdBlog = await blogsCollection.insertOne(blog);
+        const createdBlog = await blogsCollection.insertOne({...blog});
         return {...blog, id: createdBlog.insertedId.toString()}
     }
 
