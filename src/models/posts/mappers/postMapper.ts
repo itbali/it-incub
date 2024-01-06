@@ -10,5 +10,4 @@ export const postMapper = (post: WithId<PostDBType>): PostModel => ({
     blogId: post.blogId.toString(),
     blogName: post.blogName,
     createdAt: post.createdAt,
-    isMembership: post.isMembership,
 })
