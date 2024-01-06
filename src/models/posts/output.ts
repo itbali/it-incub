@@ -6,5 +6,4 @@ export type PostModel = {
     blogId: string,
     blogName: string,
     createdAt: string,
-    isMembership: boolean,
 }

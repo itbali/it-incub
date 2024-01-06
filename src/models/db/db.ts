@@ -13,5 +13,4 @@ export type PostDBType = {
     blogId: string,
     blogName: string,
     createdAt: string,
-    isMembership: boolean,
 }
