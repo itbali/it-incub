@@ -6,14 +6,13 @@ import {
     RequestWithParamsAndQuery,
     RequestWithQuery
 } from "../models/common/RequestTypes";
-import {BlogCreateModel} from "../models/blogs/input";
+import {BlogCreateModel, CreatePostInBlogModel} from "../models/blogs/input";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {blogValidation} from "../validators/blog-validator";
 import {ObjectId} from "mongodb";
 import {BlogQueryParams} from "../models/blogs/query-params";
 import {PostRepository} from "../repositories/post-repository";
-import {PostCreateModel} from "../models/posts/input";
-import {postValidation} from "../validators/post-validator";
+import {createPostInBlogValidation } from "../validators/post-validator";
 import {PostModel, PostsGetResponse} from "../models/posts/output";
 import {BlogModel, BlogsGetResponse} from "../models/blogs/output";
 
@@ -50,7 +49,13 @@ blogRoute.get("/:id/posts", async (req: RequestWithParamsAndQuery<{
     id: string
 }, BlogQueryParams>, res: Response<PostsGetResponse | number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(400)
+        res.send(404)
+        return;
+    }
+
+    const blog = await BlogRepository.getBlogById(req.params.id);
+    if (!blog) {
+        res.send(404)
         return;
     }
 
@@ -71,9 +76,9 @@ blogRoute.post("/", authMiddleware, blogValidation(), async (req: RequestWithBod
     res.status(201).send(blog);
 });
 
-blogRoute.post("/:id/posts", authMiddleware, postValidation(), async (req: RequestWithParamsAndBody<{
+blogRoute.post("/:id/posts", authMiddleware, createPostInBlogValidation(), async (req: RequestWithParamsAndBody<{
     id: string
-}, PostCreateModel>, res: Response<PostModel | number>) => {
+}, CreatePostInBlogModel>, res: Response<PostModel | number>) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.send(400)
         return;

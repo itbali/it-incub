@@ -35,3 +35,7 @@ const blogIdValidator = body('blogId')
 export const postValidation = () => {
     return [titleValidator, shortDescriptionValidator, contentValidator, blogIdValidator, inputModelValidation];
 }
+
+export const createPostInBlogValidation = () => {
+    return [titleValidator, shortDescriptionValidator, contentValidator, inputModelValidation];
+}
