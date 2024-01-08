@@ -15,7 +15,7 @@ export class BlogRepository {
             .limit(Number(pageSize))
             .toArray();
 
-        const totalBlogs = await blogsCollection.countDocuments();
+        const totalBlogs = await blogsCollection.countDocuments({name: {$regex: searchNameTerm, $options: "i"}});
         const pageCount = Math.ceil(totalBlogs / Number(pageSize));
 
         return {
