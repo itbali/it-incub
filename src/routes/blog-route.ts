@@ -91,8 +91,14 @@ blogRoute.post("/:id/posts", authMiddleware, createPostInBlogValidation(), async
     }
 
     const {title, shortDescription, content} = req.body;
-    const post = await PostRepository.createPost({title, shortDescription, content, blogId: req.params.id})
 
+    const createdPostId = await BlogRepository.createPostBlog({title, shortDescription, content, blogId: req.params.id})
+    // const post = await PostRepository.createPost({title, shortDescription, content, blogId: req.params.id})
+    const post = await PostRepository.getPostById(createdPostId);
+    if (!post) {
+        res.send(404)
+        return;
+    }
     res.status(201).send(post);
 });
 

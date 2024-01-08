@@ -1,9 +1,10 @@
-import {blogsCollection} from "../db/db";
+import {blogsCollection, postsCollection} from "../db/db";
 import {BlogModel, BlogsGetResponse} from "../models/blogs/output";
 import {blogMapper} from "../models/blogs/mappers/blogMapper";
 import {ObjectId} from "mongodb";
 import {BlogCreateModel} from "../models/blogs/input";
 import {BlogQueryParams} from "../models/blogs/query-params";
+import {PostCreateModel} from "../models/posts/input";
 
 export class BlogRepository {
 
@@ -36,6 +37,13 @@ export class BlogRepository {
         const blog = {name, websiteUrl, description, isMembership: false, createdAt: new Date().toISOString()}
         const createdBlog = await blogsCollection.insertOne({...blog});
         return {...blog, id: createdBlog.insertedId.toString()}
+    }
+
+    static async createPostBlog({blogId, title, shortDescription, content}: PostCreateModel): Promise<string>{
+        const blog = await this.getBlogById(blogId);
+        const post = {blogId, title, shortDescription, content, blogName: blog!.name, createdAt: new Date().toISOString()}
+        const createdPost = await postsCollection.insertOne({...post});
+        return createdPost.insertedId.toString();
     }
 
     static async updateBlog({id, name, websiteUrl, description}: BlogCreateModel &{id:string}): Promise<BlogModel | null>{
