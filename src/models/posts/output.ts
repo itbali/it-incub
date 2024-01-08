@@ -7,3 +7,11 @@ export type PostModel = {
     blogName: string,
     createdAt: string,
 }
+
+export type PostsGetResponse = {
+    "pagesCount": number,
+    "page": number,
+    "pageSize": number,
+    "totalCount": number,
+    "items": PostModel[]
+}

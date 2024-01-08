@@ -1,14 +1,31 @@
 import {blogsCollection} from "../db/db";
-import {BlogModel} from "../models/blogs/output";
+import {BlogModel, BlogsGetResponse} from "../models/blogs/output";
 import {blogMapper} from "../models/blogs/mappers/blogMapper";
 import {ObjectId} from "mongodb";
 import {BlogCreateModel} from "../models/blogs/input";
+import {BlogQueryParams} from "../models/blogs/query-params";
 
 export class BlogRepository {
 
-    static async getAllBlogs(): Promise<BlogModel[]>{
-        const blogs = await blogsCollection.find().toArray();
-        return blogs.map(blogMapper);
+    static async getAllBlogs({sortBy, sortDirection, pageSize, pageNumber, searchNameTerm}: Required<BlogQueryParams>): Promise<BlogsGetResponse>{
+        const blogs = await blogsCollection
+            .find()
+            .filter({name: {$regex: searchNameTerm, $options: "i"}})
+            .sort(sortBy, sortDirection)
+            .skip((Number(pageNumber) - 1) * Number(pageSize))
+            .limit(Number(pageSize))
+            .toArray();
+
+        const totalBlogs = await blogsCollection.countDocuments();
+        const pageCount = Math.ceil(totalBlogs / Number(pageSize));
+
+        return {
+            pagesCount: pageCount,
+            page: Number(pageNumber),
+            pageSize: Number(pageSize),
+            totalCount: totalBlogs,
+            items: blogs.map(blogMapper),
+        };
     }
 
     static async getBlogById(id: string): Promise<BlogModel | null>{

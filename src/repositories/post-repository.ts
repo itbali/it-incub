@@ -1,13 +1,46 @@
 import {blogsCollection, postsCollection} from "../db/db";
-import {PostModel} from "../models/posts/output";
+import {PostModel, PostsGetResponse} from "../models/posts/output";
 import {postMapper} from "../models/posts/mappers/postMapper";
 import {ObjectId} from "mongodb";
 import {PostCreateModel} from "../models/posts/input";
+import {PostQueryParams} from "../models/posts/query-params";
 
 export class PostRepository {
 
-    static async getAllPosts(): Promise<PostModel[]> {
-        return (await postsCollection.find().toArray()).map(postMapper)
+    static async getAllPosts(sortData: Required<PostQueryParams>): Promise<PostsGetResponse> {
+        const {sortBy, sortDirection, pageSize, pageNumber} = sortData;
+        const postsCount = await postsCollection.countDocuments();
+        const posts = await postsCollection
+            .find()
+            .sort(sortBy, sortDirection)
+            .skip((pageNumber - 1) * pageSize)
+            .toArray()
+
+        return {
+            pagesCount: Math.ceil(postsCount / pageSize),
+            page: pageNumber,
+            pageSize,
+            totalCount: postsCount,
+            items: posts.map(postMapper),
+        }
+    }
+
+    static async getAllPostsByBlogId({sortBy, sortDirection, pageSize, pageNumber, blogId}: Required<PostQueryParams> & {blogId: string}): Promise<PostsGetResponse> {
+        const postsCount = await postsCollection.countDocuments({blogId});
+        const posts = await postsCollection
+            .find({blogId})
+            .sort(sortBy, sortDirection)
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize)
+            .toArray()
+
+        return {
+            pagesCount: Math.ceil(postsCount / pageSize),
+            page: pageNumber,
+            pageSize,
+            totalCount: postsCount,
+            items: posts.map(postMapper),
+        }
     }
 
     static async getPostById(id: string): Promise<PostModel | null> {

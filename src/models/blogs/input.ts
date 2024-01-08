@@ -3,3 +3,9 @@ export type BlogCreateModel = {
     description: string,
     websiteUrl: string,
 }
+
+export type CreatePostInBlogModel = {
+    title: string,
+    shortDescription: string,
+    content: string,
+}
