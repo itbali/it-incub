@@ -13,7 +13,8 @@ export class PostRepository {
         const posts = await postsCollection
             .find()
             .sort(sortBy, sortDirection)
-            .skip((pageNumber - 1) * pageSize)
+            .skip((Number(pageNumber) - 1) * Number(pageSize))
+            .limit(Number(pageSize))
             .toArray()
 
         return {
