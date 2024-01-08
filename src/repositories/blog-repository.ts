@@ -9,8 +9,7 @@ export class BlogRepository {
 
     static async getAllBlogs({sortBy, sortDirection, pageSize, pageNumber, searchNameTerm}: Required<BlogQueryParams>): Promise<BlogsGetResponse>{
         const blogs = await blogsCollection
-            .find()
-            .filter({name: {$regex: searchNameTerm, $options: "i"}})
+            .find({name: {$regex: searchNameTerm, $options: "i"}})
             .sort(sortBy, sortDirection)
             .skip((Number(pageNumber) - 1) * Number(pageSize))
             .limit(Number(pageSize))
