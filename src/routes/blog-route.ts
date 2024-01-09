@@ -62,8 +62,8 @@ blogRoute.get("/:id/posts", async (req: RequestWithParamsAndQuery<{
     const sortData = {
         sortBy: req.query.sortBy ?? "createdAt",
         sortDirection: req.query.sortDirection ?? "desc",
-        pageNumber: req.query.pageNumber || 1,
-        pageSize: req.query.pageSize || 10,
+        pageNumber: Number(req.query.pageNumber) || 1,
+        pageSize: Number(req.query.pageSize) || 10,
         searchNameTerm: req.query.searchNameTerm || "",
     };
     const posts = await PostRepository.getAllPostsByBlogId({...sortData, blogId: req.params.id});
