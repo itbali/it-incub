@@ -32,14 +32,14 @@ blogRoute.get("/", async (req: RequestWithQuery<BlogQueryParams>, res: Response<
 
 blogRoute.get("/:id", async (req: Request<{ id: string }>, res: Response<BlogModel | number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(400)
+        res.sendStatus(400)
         return;
     }
 
     const blog = await BlogService.getBlogById(req.params.id);
 
     if (!blog) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
     res.send(blog);
@@ -49,13 +49,13 @@ blogRoute.get("/:id/posts", async (req: RequestWithParamsAndQuery<{
     id: string
 }, BlogQueryParams>, res: Response<PostsGetResponse | number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
 
     const blog = await BlogService.getBlogById(req.params.id);
     if (!blog) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
     const posts = await PostService.getAllPostsByBlogId({sortBy: req.query.sortBy ,
@@ -76,13 +76,13 @@ blogRoute.post("/:id/posts", authMiddleware, createPostInBlogValidation(), async
     id: string
 }, CreatePostInBlogModel>, res: Response<PostModel | number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(400)
+        res.sendStatus(400)
         return;
     }
 
     const blog = await BlogService.getBlogById(req.params.id);
     if (!blog) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
 
@@ -92,7 +92,7 @@ blogRoute.post("/:id/posts", authMiddleware, createPostInBlogValidation(), async
     // const post = await PostRepository.createPost({title, shortDescription, content, blogId: req.params.id})
     const post = await PostService.getPostById(createdPostId);
     if (!post) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
     res.status(201).send(post);
@@ -102,7 +102,7 @@ blogRoute.put("/:id", authMiddleware, blogValidation(), async (req: RequestWithP
     id: string
 }, BlogCreateModel>, res: Response<number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(400)
+        res.sendStatus(400)
         return;
     }
 
@@ -110,23 +110,23 @@ blogRoute.put("/:id", authMiddleware, blogValidation(), async (req: RequestWithP
     const blog = await BlogService.updateBlog({id: req.params.id, name, websiteUrl, description})
 
     if (!blog) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
-    res.send(204);
+    res.sendStatus(204);
 });
 
 blogRoute.delete("/:id", authMiddleware, async (req: Request<{ id: string }>, res: Response<number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(400)
+        res.sendStatus(400)
         return;
     }
 
     const blog = await BlogService.deleteBlog(req.params.id);
 
     if (!blog) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
-    res.send(204);
+    res.sendStatus(204);
 });

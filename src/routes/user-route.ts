@@ -19,7 +19,7 @@ userRoute.get("/",authMiddleware, async (req: RequestWithQuery<getUserQueryParam
     })
     res.send(users)
 })
-userRoute.post("/", authMiddleware, userValidation, async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
+userRoute.post("/", authMiddleware, userValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
     const createdUser = await userService.createUser({
         email: req.body.email,
         login: req.body.login,

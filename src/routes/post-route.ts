@@ -23,12 +23,12 @@ postRoute.get("/", async (req: RequestWithQuery<PostQueryParams>, res: Response<
 
 postRoute.get("/:id", async (req: Request<{ id: string }>, res: Response<PostModel | number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(400)
+        res.sendStatus(400)
         return;
     }
     const post = await PostService.getPostById(req.params.id);
     if (!post) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
     res.send(post);
@@ -36,13 +36,13 @@ postRoute.get("/:id", async (req: Request<{ id: string }>, res: Response<PostMod
 
 postRoute.post("/", authMiddleware, postValidation(), async (req: RequestWithBody<PostCreateModel>, res: Response<PostModel | number>) => {
     if (!ObjectId.isValid(req.body.blogId)) {
-        res.send(400)
+        res.sendStatus(400)
         return;
     }
     const {title, shortDescription, content, blogId} = req.body;
     const post = await PostService.createPost({title, shortDescription, content, blogId})
     if (!post) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
     res.status(201).send(post);
@@ -50,27 +50,27 @@ postRoute.post("/", authMiddleware, postValidation(), async (req: RequestWithBod
 
 postRoute.put("/:id", authMiddleware, postValidation(), async (req: Request<{ id: string }>, res: Response<number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(400)
+        res.sendStatus(400)
         return;
     }
     const {title, shortDescription, content, blogId} = req.body;
     const post = await PostService.updatePost({id: req.params.id, title, shortDescription, content, blogId})
     if (!post) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
-    res.send(204);
+    res.sendStatus(204);
 });
 
 postRoute.delete("/:id", authMiddleware, async (req: Request<{ id: string }>, res: Response<number>) => {
     if (!ObjectId.isValid(req.params.id)) {
-        res.send(400)
+        res.sendStatus(400)
         return;
     }
     const post = await PostService.deletePost(req.params.id);
     if (!post) {
-        res.send(404)
+        res.sendStatus(404)
         return;
     }
-    res.send(204);
+    res.sendStatus(204);
 });
