@@ -29,7 +29,7 @@ userRoute.post("/", authMiddleware, userValidation(), async (req: RequestWithBod
         res.sendStatus(400)
         return
     }
-    res.send(createdUser)
+    res.status(201).send(createdUser)
 })
 userRoute.delete("/:id", authMiddleware, async (req: Request<{id:string}>, res: Response)=>{
     const deletedUser = await userService.deleteUser(req.params.id)
