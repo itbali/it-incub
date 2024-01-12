@@ -1,7 +1,4 @@
-import {postsCollection} from "../db/db";
 import {PostModel, PostsGetResponse} from "../models/posts/output";
-import {postMapper} from "../models/posts/mappers/postMapper";
-import {ObjectId} from "mongodb";
 import {PostCreateModel} from "../models/posts/input";
 import {PostQueryParams} from "../models/posts/query-params";
 import {PostRepository} from "../repositories/post-repository";
@@ -10,7 +7,7 @@ import {BlogService} from "./blog-service";
 export class PostService {
 
     static async getAllPosts(sortData: PostQueryParams): Promise<PostsGetResponse> {
-        const {sortBy = "createdAt", sortDirection = "desc", pageSize = 10, pageNumber = 10} = sortData;
+        const {sortBy = "createdAt", sortDirection = "desc", pageSize = 10, pageNumber = 1} = sortData;
         return await PostRepository.getAllPosts({
             sortBy,
             sortDirection,

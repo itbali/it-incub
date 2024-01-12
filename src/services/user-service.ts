@@ -12,7 +12,7 @@ export class userService {
         const passwordHash = await this._generateHash(passwordSalt, password)
 
         const user: UserDBType = {
-            createdAt: Date.now().toString(),
+            createdAt: new Date().toISOString(),
             login,
             email,
             passwordHash,
