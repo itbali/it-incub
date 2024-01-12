@@ -1,7 +1,7 @@
 import express from "express";
 import {blogRoute} from "./routes/blog-route";
 import {postRoute} from "./routes/post-route";
-import {blogsCollection, postsCollection} from "./db/db";
+import {blogsCollection, postsCollection, usersCollection} from "./db/db";
 import {userRoute} from "./routes/user-route";
 import {authRoute} from "./routes/authRoute";
 
@@ -11,6 +11,7 @@ app.use(express.json());
 app.delete("/testing/all-data", async (_req, res) => {
     await blogsCollection.deleteMany({});
     await postsCollection.deleteMany({});
+    await usersCollection.deleteMany({});
     res.send(204)
 })
 
