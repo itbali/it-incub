@@ -4,6 +4,7 @@ import {postMapper} from "../models/posts/mappers/postMapper";
 import {ObjectId} from "mongodb";
 import {PostCreateModel} from "../models/posts/input";
 import {PostQueryParams} from "../models/posts/query-params";
+import {PostDBType} from "../models/db/db";
 
 export class PostRepository {
 
@@ -49,9 +50,7 @@ export class PostRepository {
         return post ? postMapper(post) : null;
     }
 
-    static async createPost({title, shortDescription, content, blogId}: PostCreateModel): Promise<PostModel> {
-        const blogName = (await blogsCollection.findOne({_id: new ObjectId(blogId)}))!.name;
-        const post = { title, shortDescription, content, blogId, blogName, createdAt: new Date().toISOString() }
+    static async createPost(post: PostDBType): Promise<PostModel> {
         const createdPost = await postsCollection.insertOne({...post})
         return {...post, id: createdPost.insertedId.toString()}
     }
