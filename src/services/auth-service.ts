@@ -17,6 +17,6 @@ export class AuthService {
 
     static async _validatePassword(password: string, salt: string, hash: string) {
         const passwordHash = await bcrypt.hash(password, salt)
-        return await bcrypt.compare(passwordHash, hash)
+        return passwordHash === hash
     }
 }
