@@ -44,7 +44,7 @@ export class userService {
 
     static async getAllUsers(sort: getUserQueryParams): Promise<GetUsersResponse>{
         return await  userRepository.getAllUsers({
-            sortBy: sort.sortBy || "CreatedAt",
+            sortBy: sort.sortBy || "createdAt",
             pageNumber: Number(sort.pageNumber) || 1,
             pageSize: Number(sort.pageSize) || 10,
             searchEmailTerm: sort.searchEmailTerm || "",

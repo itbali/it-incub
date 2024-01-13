@@ -8,11 +8,7 @@ export class AuthService {
         if(!user){
             return null
         }
-        const isPasswordValid = await this._validatePassword(credentials.password, user.passwordSalt, user.passwordHash)
-        if(!isPasswordValid){
-            return null
-        }
-        return isPasswordValid
+        return await this._validatePassword(credentials.password, user.passwordSalt, user.passwordHash)
     }
 
     static async _validatePassword(password: string, salt: string, hash: string) {

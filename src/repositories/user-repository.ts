@@ -35,7 +35,9 @@ export class userRepository {
                                  sortBy
                              }: Required<getUserQueryParams>): Promise<GetUsersResponse> {
         const users = await usersCollection
-            .find({email: {$regex: searchEmailTerm, $options: "i"}, login: {$regex: searchLoginTerm, $options: "i"}})
+            .find({
+                email: {$regex: searchEmailTerm, $options: "i"},
+                login: {$regex: searchLoginTerm, $options: "i"}})
             .sort(sortBy, sortDirection)
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
