@@ -8,7 +8,7 @@
     "mon": "pnpm nodemon --inspect ./dist/index.js",
     "watch": "tsc -w",
     "build": "pnpm install && pnpm tsc",
-    "vercel-build": "pnpm tsc",
+    "vercel-build": "tsc",
     "test": "jest -i --forceExit",
     "start": "node ./dist/index.js"
   },
