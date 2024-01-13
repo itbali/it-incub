@@ -34,18 +34,18 @@ export class userRepository {
                                  sortDirection,
                                  sortBy
                              }: Required<getUserQueryParams>): Promise<GetUsersResponse> {
+        const filter = {
+            $or: [
+                {email: {$regex: searchEmailTerm, $options: "i"}},
+                {login: {$regex: searchLoginTerm, $options: "i"}}]
+        };
         const users = await usersCollection
-            .find({
-                email: {$regex: searchEmailTerm, $options: "i"},
-                login: {$regex: searchLoginTerm, $options: "i"}})
+            .find(filter)
             .sort(sortBy, sortDirection)
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
             .toArray()
-        const usersCount = await usersCollection.countDocuments({
-            login: {$regex: searchLoginTerm, $options: "i"},
-            email: {$regex: searchEmailTerm, $options: "i"}
-        })
+        const usersCount = await usersCollection.countDocuments(filter)
         return {
             pagesCount: Math.ceil(usersCount / pageSize),
             page: pageNumber,
