@@ -16,11 +16,11 @@ export class AuthUtil {
     }
 
     static generateJwtToken(userId:string) {
-        return jwt.sign({id:userId},"process.env.SECRET_KEY as string", {expiresIn: "1h"})
+        return jwt.sign({id:userId},process.env.SECRET_KEY as string, {expiresIn: "1h"})
     }
 
     static verifyJwtToken(token: string) {
-        return jwt.verify(token, "process.env.SECRET_KEY as string");
+        return jwt.verify(token, process.env.SECRET_KEY as string);
     }
 
     static decodeJwtToken(token: string) {
