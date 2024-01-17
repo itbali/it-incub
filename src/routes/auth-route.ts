@@ -12,7 +12,7 @@ authRoute.post("/login", loginValidation(), async (req: RequestWithBody<LoginMod
         res.sendStatus(401);
         return;
     }
-    res.send({accessToken:loginResult});
+    res.status(200).send({accessToken:loginResult});
 })
 
 authRoute.get("/me", async (req: Request, res: Response) => {
