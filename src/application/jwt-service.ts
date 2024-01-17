@@ -20,7 +20,8 @@ export class JwtService {
         if(!isTokenValid){
             return null
         }
-        const {userId} = AuthUtil.decodeJwtToken(token) as JwtPayload
-        return await userService.getUserById(userId)
+        const {id} = AuthUtil.decodeJwtToken(token) as JwtPayload
+        console.log(JSON.stringify(AuthUtil.decodeJwtToken))
+        return await userService.getUserById(id)
     }
 }
