@@ -16,6 +16,7 @@ import {CommentCreateModel} from "../models/comments/input";
 import {CommentService} from "../services/comment-service";
 import {CommentsGetResponse} from "../models/comments/output";
 import {jwtMiddleware} from "../middlewares/auth/jwt-middleware";
+import {commentValidation} from "../validators/comment-validator";
 
 export const postRoute = express.Router();
 
@@ -84,7 +85,7 @@ postRoute.delete("/:id", authMiddleware, async (req: Request<{ id: string }>, re
     res.sendStatus(204);
 });
 
-postRoute.post("/:id/comments",jwtMiddleware,async (req:RequestWithParamsAndBody<{ id: string }, CommentCreateModel>, res: Response)=>{
+postRoute.post("/:id/comments",jwtMiddleware, commentValidation() ,async (req:RequestWithParamsAndBody<{ id: string }, CommentCreateModel>, res: Response)=>{
     const postId = req.params.id
     const content = req.body.content
     const comment = await PostService.addCommentToPost(postId, content, req.userId!)
@@ -103,6 +104,12 @@ postRoute.get("/:id/comments", async (req: RequestWithParamsAndQuery<{ id: strin
         pageSize: req.query.pageSize,
         postId: req.params.id
     }
+    const post = await PostService.getPostById(req.params.id);
+    if (!post) {
+        res.sendStatus(404)
+        return;
+    }
+
     const comments = await CommentService.getCommentsByPostId(sortData);
     res.send(comments);
 });
