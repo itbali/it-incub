@@ -16,7 +16,7 @@ export class AuthUtil {
     }
 
     static generateJwtToken(userId:string) {
-        return jwt.sign(userId,process.env.SECRET_KEY as string, {expiresIn: "1h"})
+        return jwt.sign({id:userId},process.env.SECRET_KEY as string, {expiresIn: "1h"})
     }
 
     static verifyJwtToken(token: string) {
