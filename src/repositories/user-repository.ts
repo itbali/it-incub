@@ -4,8 +4,9 @@ import {usersCollection} from "../db/db";
 import {userMapper} from "../models/users/mappers/userMapper";
 import {ObjectId} from "mongodb";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
+import {UserWithHash} from "../models/users/userWithHash";
 
-export class userRepository {
+export class UserRepository {
     static async createUser({createdAt, passwordHash, login, passwordSalt, email}: UserDBType): Promise<string | null> {
         const existingUser = await usersCollection.findOne({$or: [{login}, {email}]})
         if (existingUser) {
@@ -21,9 +22,15 @@ export class userRepository {
         return foundUser ? userMapper(foundUser) : null
     }
 
-    static async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserDBType | null> {
+    static async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserWithHash | null> {
         const foundUser = await usersCollection.findOne({$or: [{login: loginOrEmail}, {email: loginOrEmail}]})
-        return foundUser ? foundUser : null
+        return foundUser ? {
+            email: foundUser.email,
+            id: foundUser._id.toString(),
+            login: foundUser.login,
+            passwordHash: foundUser.passwordHash,
+            passwordSalt: foundUser.passwordSalt
+        } : null
     }
 
     static async getAllUsers({

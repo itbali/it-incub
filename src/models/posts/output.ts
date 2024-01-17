@@ -1,4 +1,4 @@
-export type PostModel = {
+export type PostVM = {
     id: string,
     title: string,
     shortDescription: string,
@@ -13,5 +13,5 @@ export type PostsGetResponse = {
     "page": number,
     "pageSize": number,
     "totalCount": number,
-    "items": PostModel[]
+    "items": PostVM[]
 }

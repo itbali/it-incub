@@ -1,5 +1,5 @@
-import {blogsCollection, postsCollection} from "../db/db";
-import {PostModel, PostsGetResponse} from "../models/posts/output";
+import {postsCollection} from "../db/db";
+import {PostVM, PostsGetResponse} from "../models/posts/output";
 import {postMapper} from "../models/posts/mappers/postMapper";
 import {ObjectId} from "mongodb";
 import {PostCreateModel} from "../models/posts/input";
@@ -45,19 +45,19 @@ export class PostRepository {
         }
     }
 
-    static async getPostById(id: string): Promise<PostModel | null> {
+    static async getPostById(id: string): Promise<PostVM | null> {
         const post = await postsCollection.findOne({_id: new ObjectId(id)});
         return post ? postMapper(post) : null;
     }
 
-    static async createPost(post: PostDBType): Promise<PostModel> {
+    static async createPost(post: PostDBType): Promise<PostVM> {
         const createdPost = await postsCollection.insertOne({...post})
         return {...post, id: createdPost.insertedId.toString()}
     }
 
     static async updatePost({id, title, shortDescription, content, blogId}: PostCreateModel & {
         id: string
-    }): Promise<PostModel | null> {
+    }): Promise<PostVM | null> {
         const updatedPost = await postsCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
             $set: {
                 title,
@@ -69,7 +69,7 @@ export class PostRepository {
         return updatedPost ? postMapper(updatedPost) : null;
     }
 
-    static async deletePost(id: string): Promise<PostModel | null> {
+    static async deletePost(id: string): Promise<PostVM | null> {
         const deletedPost = await postsCollection.findOneAndDelete({_id: new ObjectId(id)});
         return deletedPost ? postMapper(deletedPost) : null;
     }

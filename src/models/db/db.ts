@@ -22,3 +22,14 @@ export type UserDBType = {
     passwordHash: string,
     passwordSalt: string,
 }
+
+export type CommentDBType = {
+    content: string,
+    createdAt: string,
+    postId: string,
+    postTitle: string,
+    commentatorInfo: {
+        userId: string,
+        userLogin: string,
+    }
+}

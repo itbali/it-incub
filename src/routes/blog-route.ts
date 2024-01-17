@@ -12,7 +12,7 @@ import {blogValidation} from "../validators/blog-validator";
 import {ObjectId} from "mongodb";
 import {BlogQueryParams} from "../models/blogs/query-params";
 import {createPostInBlogValidation } from "../validators/post-validator";
-import {PostModel, PostsGetResponse} from "../models/posts/output";
+import {PostVM, PostsGetResponse} from "../models/posts/output";
 import {BlogModel, BlogsGetResponse} from "../models/blogs/output";
 import {PostService} from "../services/post-service";
 
@@ -74,7 +74,7 @@ blogRoute.post("/", authMiddleware, blogValidation(), async (req: RequestWithBod
 
 blogRoute.post("/:id/posts", authMiddleware, createPostInBlogValidation(), async (req: RequestWithParamsAndBody<{
     id: string
-}, CreatePostInBlogModel>, res: Response<PostModel | number>) => {
+}, CreatePostInBlogModel>, res: Response<PostVM | number>) => {
     if (!ObjectId.isValid(req.params.id)) {
         res.sendStatus(400)
         return;
