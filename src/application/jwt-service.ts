@@ -21,7 +21,6 @@ export class JwtService {
             return null
         }
         const {id} = AuthUtil.decodeJwtToken(token) as JwtPayload
-        console.log(JSON.stringify(AuthUtil.decodeJwtToken))
         return await userService.getUserById(id)
     }
 }

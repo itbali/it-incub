@@ -24,7 +24,6 @@ describe("test app ", () => {
 			.set("Authorization", authHeader)
 			.send(blog)
 
-		console.log(response)
 		expect(response.body).toMatchObject(blog)
 
 		const allBlogs = await request(app).get("/blogs/").expect(200)

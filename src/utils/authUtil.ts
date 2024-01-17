@@ -20,7 +20,12 @@ export class AuthUtil {
     }
 
     static verifyJwtToken(token: string) {
-        return jwt.verify(token, process.env.SECRET_KEY as string);
+        try {
+            jwt.verify(token, process.env.SECRET_KEY as string);
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
     static decodeJwtToken(token: string) {

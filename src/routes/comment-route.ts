@@ -37,13 +37,13 @@ commentRoute.delete("/:id", jwtMiddleware, async (req: Request<{ id: string }>, 
     const id = req.params.id;
     const userId = req.userId;
     const commentUserId = await CommentService.getCommentUserId(id);
-    if (commentUserId !== userId) {
-        res.sendStatus(403);
-        return;
-    }
     const comment = await CommentService.deleteComment(id);
     if (!comment) {
         res.sendStatus(404);
+        return;
+    }
+    if (commentUserId !== userId) {
+        res.sendStatus(403);
         return;
     }
     res.sendStatus(204);
