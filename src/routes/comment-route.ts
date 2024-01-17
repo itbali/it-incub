@@ -20,17 +20,20 @@ commentRoute.put("/:id", jwtMiddleware, async (req: RequestWithParamsAndBody<{
 }, CommentCreateModel>, res: Response) => {
     const id = req.params.id;
     const userId = req.userId;
-    const commentUserId = await CommentService.getCommentUserId(id);
-    if (commentUserId !== userId) {
-        res.sendStatus(403);
-        return;
-    }
     const content = req.body.content;
+
+    const commentUserId = await CommentService.getCommentUserId(id);
     const comment = await CommentService.updateComment(id, content);
+
     if (!comment) {
         res.sendStatus(404);
         return;
     }
+    if (commentUserId !== userId) {
+        res.sendStatus(403);
+        return;
+    }
+
     res.sendStatus(204);
 })
 commentRoute.delete("/:id", jwtMiddleware, async (req: Request<{ id: string }>, res) => {
@@ -38,13 +41,16 @@ commentRoute.delete("/:id", jwtMiddleware, async (req: Request<{ id: string }>, 
     const userId = req.userId;
     const commentUserId = await CommentService.getCommentUserId(id);
     const comment = await CommentService.deleteComment(id);
+
     if (!comment) {
         res.sendStatus(404);
         return;
     }
+
     if (commentUserId !== userId) {
         res.sendStatus(403);
         return;
     }
+
     res.sendStatus(204);
 })
