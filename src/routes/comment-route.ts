@@ -2,7 +2,7 @@ import {Router, Request, Response} from "express";
 import {CommentService} from "../services/comment-service";
 import {RequestWithParamsAndBody} from "../models/common/RequestTypes";
 import {CommentCreateModel} from "../models/comments/input";
-import {authMiddleware} from "../middlewares/auth/auth-middleware";
+import {jwtMiddleware} from "../middlewares/auth/jwt-middleware";
 
 export const commentRoute = Router();
 
@@ -15,7 +15,7 @@ commentRoute.get("/:id", async (req: Request<{ id: string }>, res) => {
     }
     res.send(comment);
 })
-commentRoute.put("/:id", authMiddleware, async (req: RequestWithParamsAndBody<{
+commentRoute.put("/:id", jwtMiddleware, async (req: RequestWithParamsAndBody<{
     id: string
 }, CommentCreateModel>, res: Response) => {
     const id = req.params.id;
@@ -33,7 +33,7 @@ commentRoute.put("/:id", authMiddleware, async (req: RequestWithParamsAndBody<{
     }
     res.sendStatus(204);
 })
-commentRoute.delete("/:id", authMiddleware, async (req: Request<{ id: string }>, res) => {
+commentRoute.delete("/:id", jwtMiddleware, async (req: Request<{ id: string }>, res) => {
     const id = req.params.id;
     const userId = req.userId;
     const commentUserId = await CommentService.getCommentUserId(id);

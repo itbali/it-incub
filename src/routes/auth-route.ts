@@ -3,6 +3,7 @@ import {RequestWithBody} from "../models/common/RequestTypes";
 import {LoginModel} from "../models/auth/input";
 import {AuthService} from "../services/auth-service";
 import {loginValidation} from "../validators/login-validator";
+import {JwtService} from "../application/jwt-service";
 
 export const authRoute = Router();
 
@@ -21,7 +22,7 @@ authRoute.get("/me", async (req: Request, res: Response) => {
         res.sendStatus(401);
         return;
     }
-    const user = await AuthService.getUserByToken(authToken);
+    const user = await JwtService.getUserByToken(authToken);
     if (!user) {
         res.sendStatus(404);
         return;

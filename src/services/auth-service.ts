@@ -1,7 +1,6 @@
 import {LoginModel} from "../models/auth/input";
 import {userService} from "./user-service";
-import {AuthUtil} from "../utils/authUtil";
-import {JwtPayload} from "jsonwebtoken";
+import bcrypt from "bcrypt"
 
 export class AuthService {
     static async login(credentials: LoginModel) {
@@ -9,18 +8,15 @@ export class AuthService {
         if(!user){
             return null
         }
-        if(await AuthUtil.validatePassword(credentials.password, user.passwordSalt, user.passwordHash)){
-            return AuthUtil.generateJwtToken(user.id)
-        }
-        return null
-    }
-
-    static async getUserByToken(token: string) {
-        const isTokenValid = AuthUtil.verifyJwtToken(token)
-        if(!isTokenValid){
+        const isPasswordValid = await this._validatePassword(credentials.password, user.passwordSalt, user.passwordHash)
+        if(!isPasswordValid){
             return null
         }
-        const {userId} = AuthUtil.decodeJwtToken(token) as JwtPayload
-        return await userService.getUserById(userId)
+        return isPasswordValid
+    }
+
+    static async _validatePassword(password: string, salt: string, hash: string) {
+        const passwordHash = await bcrypt.hash(password, salt)
+        return await bcrypt.compare(passwordHash, hash)
     }
 }
