@@ -35,7 +35,11 @@ export class CommentService {
     }
 
     static async getCommentById(id: string) {
-        return await commentRepository.getCommentById(id);
+        const comment = await commentRepository.getCommentById(id);
+        if (!comment) {
+            return {error: "not_found"};
+        }
+        return comment;
     }
 
     static async getCommentUserId(id: string) {
@@ -46,27 +50,36 @@ export class CommentService {
         return comment.commentatorInfo.userId;
     }
 
-    static async updateComment(id: string, content: string) {
-        const commentToUpdate = await commentRepository.getCommentById(id);
+    static async updateComment(commentId: string, content: string,userId: string) {
+        const commentToUpdate = await commentRepository.getCommentById(commentId);
+        const commentUserId = await this.getCommentUserId(commentId);
+
         if (!commentToUpdate) {
-            return null;
+            return {error: "not_found"};
+        }
+        if (commentUserId !== userId) {
+            return {error: "forbidden"};
         }
         const updatedComment = await commentRepository.updateComment({
             ...commentToUpdate,
             content: content,
         });
         if (!updatedComment) {
-            return null;
+            return {error: "not_found"};
         }
         return updatedComment;
     }
 
-    static async deleteComment(id: string) {
-        const commentToDelete = await commentRepository.getCommentById(id);
+    static async deleteComment(commentId: string, userId: string) {
+        const commentUserId = await this.getCommentUserId(commentId);
+        const commentToDelete = await commentRepository.getCommentById(commentId);
         if (!commentToDelete) {
-            return null;
+            return {error: "not_found"};
         }
-        await commentRepository.deleteComment(id);
+        if (commentUserId !== userId) {
+            return {error: "forbidden"};
+        }
+        await commentRepository.deleteComment(commentId);
         return commentToDelete;
     }
 }

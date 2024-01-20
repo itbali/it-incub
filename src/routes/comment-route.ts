@@ -9,48 +9,49 @@ export const commentRoute = Router();
 
 commentRoute.get("/:id", async (req: Request<{ id: string }>, res) => {
     const id = req.params.id;
-    const comment = await CommentService.getCommentById(id);
-    if (!comment) {
-        res.sendStatus(404);
-        return;
+    const findCommentResult = await CommentService.getCommentById(id);
+    if ("error" in findCommentResult) {
+        if (findCommentResult.error === "not_found") {
+            res.sendStatus(404);
+            return;
+        }
     }
-    res.send(comment);
+    res.send(findCommentResult);
 })
 commentRoute.put("/:id", jwtMiddleware, commentValidation(), async (req: RequestWithParamsAndBody<{
     id: string
 }, CommentCreateModel>, res: Response) => {
     const id = req.params.id;
-    const userId = req.userId;
     const content = req.body.content;
 
-    const commentUserId = await CommentService.getCommentUserId(id);
-    const comment = await CommentService.updateComment(id, content);
+    const updateResult = await CommentService.updateComment(id, content, req.userId!);
 
-    if (!comment) {
-        res.sendStatus(404);
-        return;
-    }
-    if (commentUserId !== userId) {
-        res.sendStatus(403);
-        return;
+    if ("error" in updateResult) {
+        if (updateResult.error === "not_found") {
+            res.sendStatus(404);
+            return;
+        }
+        if (updateResult.error === "forbidden") {
+            res.sendStatus(403);
+            return;
+        }
     }
 
     res.sendStatus(204);
 })
 commentRoute.delete("/:id", jwtMiddleware, async (req: Request<{ id: string }>, res) => {
     const id = req.params.id;
-    const userId = req.userId;
-    const commentUserId = await CommentService.getCommentUserId(id);
-    const comment = await CommentService.deleteComment(id);
+    const deleteResult = await CommentService.deleteComment(id, req.userId!);
 
-    if (!comment) {
-        res.sendStatus(404);
-        return;
-    }
-
-    if (commentUserId !== userId) {
-        res.sendStatus(403);
-        return;
+    if ("error" in deleteResult) {
+        if (deleteResult.error === "not_found") {
+            res.sendStatus(404);
+            return;
+        }
+        if (deleteResult.error === "forbidden") {
+            res.sendStatus(403);
+            return;
+        }
     }
 
     res.sendStatus(204);
