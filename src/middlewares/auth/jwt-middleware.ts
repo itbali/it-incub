@@ -1,5 +1,6 @@
 import {NextFunction, Request, Response} from "express";
 import {JwtService} from "../../application/jwt-service";
+import {AuthService} from "../../services/auth-service";
 
 export const jwtMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -9,7 +10,7 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
         return;
     }
 
-    const user = await JwtService.getUserByToken(token)
+    const user = await AuthService.getUserByToken(token)
     if (!user) {
         res.sendStatus(401)
         return;

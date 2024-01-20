@@ -5,12 +5,13 @@ import {UserRepository} from "../repositories/user-repository";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
 import {AuthUtil} from "../utils/authUtil";
 import {UserWithHash} from "../models/users/userWithHash";
+import {BcriptSrvice} from "../application/bcript-srvice";
 
 export class userService {
 
     static async createUser({password, login, email}: UserCreateModel): Promise<UserVM | null> {
-        const passwordSalt =  await AuthUtil.generateSalt()
-        const passwordHash = await AuthUtil.generateHash(passwordSalt, password)
+        const passwordSalt =  await BcriptSrvice.generateSalt()
+        const passwordHash = await BcriptSrvice.generateHash(passwordSalt, password)
 
         const user: UserDBType = {
             createdAt: new Date().toISOString(),

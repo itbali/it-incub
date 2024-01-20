@@ -22,7 +22,7 @@ authRoute.get("/me", async (req: Request, res: Response) => {
         res.sendStatus(401);
         return;
     }
-    const user = await JwtService.getUserByToken(authToken);
+    const user = await AuthService.getUserByToken(authToken);
     if (!user) {
         res.sendStatus(404);
         return;

@@ -1,34 +1,23 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
+import {BcriptSrvice} from "../application/bcript-srvice";
+import {LoginModel} from "../models/auth/input";
+import {userService} from "../services/user-service";
+import {JwtService} from "../application/jwt-service";
 
 export class AuthUtil {
     static async validatePassword(password: string, salt: string, hash: string) {
-        const passwordHash = await bcrypt.hash(password, salt);
-        return passwordHash === hash;
+        return BcriptSrvice.validatePasswordWithSalt(password, salt, hash)
     }
 
-    static async generateHash(salt: string, password: string) {
-        return await bcrypt.hash(password, salt);
-    }
-
-    static async generateSalt() {
-        return await bcrypt.genSalt(10);
-    }
-
-    static generateJwtToken(userId:string) {
-        return jwt.sign({id:userId},process.env.SECRET_KEY as string, {expiresIn: "1h"})
-    }
-
-    static verifyJwtToken(token: string) {
-        try {
-            jwt.verify(token, process.env.SECRET_KEY as string);
-            return true;
-        } catch (e) {
-            return false;
+    static async login(credentials: LoginModel) {
+        const user = await userService.getUserByEmailOrLogin(credentials.loginOrEmail)
+        if(!user){
+            return null
         }
-    }
-
-    static decodeJwtToken(token: string) {
-        return jwt.decode(token);
+        if(await AuthUtil.validatePassword(credentials.password, user.passwordSalt, user.passwordHash)){
+            return JwtService.generateJwtToken(user.id)
+        }
+        return null
     }
 }
