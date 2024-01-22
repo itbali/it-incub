@@ -7,7 +7,7 @@ export class EmailService {
             subject: 'Confirm your email',
             html: `<h1>Thanks for your registration</h1>
                         <p>To finish registration please follow the link below:
-                        <a href='https://somesite.com/confirm-email?code=${confirmCode}'>complete registration</a>
+                        <a href='https://it-incub.vercel.app/auth/registration-confirmation?code=${confirmCode}'>complete registration</a>
                     </p>`
         })
     }

@@ -6,8 +6,8 @@ import {loginValidation} from "../validators/login-validator";
 
 export const authRoute = Router();
 
-authRoute.post("/registration",(req: RequestWithBody<UserCreateModel>, res: Response)=>{
-    const createdUser = AuthService.register({
+authRoute.post("/registration",async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
+    const createdUser = await AuthService.register({
         email: req.body.email,
         login: req.body.login,
         password: req.body.password
@@ -19,8 +19,8 @@ authRoute.post("/registration",(req: RequestWithBody<UserCreateModel>, res: Resp
     res.status(201).send(createdUser);
 })
 
-authRoute.post("/registration-confirmation",(req: RequestWithQuery<{code:string}>,res: Response)=>{
-    const confirmResult = AuthService.confirmEmail(req.query.code);
+authRoute.post("/registration-confirmation",async (req: RequestWithQuery<{code:string}>,res: Response)=>{
+    const confirmResult = await AuthService.confirmEmail(req.query.code);
     if(!confirmResult){
         res.sendStatus(400);
         return;
@@ -28,8 +28,8 @@ authRoute.post("/registration-confirmation",(req: RequestWithQuery<{code:string}
     res.sendStatus(200);
 })
 
-authRoute.post("/registration-email-resending",(req: RequestWithBody<{email:string}>,res: Response)=>{
-    const confirmResult = AuthService.resendConfirmEmail(req.body.email);
+authRoute.post("/registration-email-resending",async (req: RequestWithBody<{email:string}>,res: Response)=>{
+    const confirmResult = await AuthService.resendConfirmEmail(req.body.email);
     if(!confirmResult){
         res.sendStatus(400);
         return;
