@@ -2,8 +2,8 @@ import jwt from "jsonwebtoken";
 
 export class JwtService {
 
-    public static generateJwtToken(userId:string) {
-        return jwt.sign({id:userId},process.env.SECRET_KEY as string, {expiresIn: "1h"})
+    public static generateJwtToken(data:string) {
+        return jwt.sign({data},process.env.SECRET_KEY as string, {expiresIn: "1h"})
     }
 
     static verifyJwtToken(token: string) {

@@ -3,8 +3,8 @@ import {userService} from "../services/user-service";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {RequestWithBody, RequestWithQuery} from "../models/common/RequestTypes";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
-import {UserCreateModel} from "../models/users/input";
 import {userValidation} from "../validators/user-validator";
+import {UserCreateModel} from "../models/auth/input";
 
 export const userRoute = Router();
 

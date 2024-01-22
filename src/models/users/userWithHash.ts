@@ -3,5 +3,6 @@ export type UserWithHash = {
     login: string,
     email: string,
     passwordHash: string,
-    passwordSalt: string
+    passwordSalt: string,
+    isConfirmed: boolean,
 }

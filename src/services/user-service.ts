@@ -1,11 +1,10 @@
-import {UserCreateModel} from "../models/users/input";
 import {GetUsersResponse, UserVM} from "../models/users/output";
 import {UserDBType} from "../models/db/db";
 import {UserRepository} from "../repositories/user-repository";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
-import {AuthUtil} from "../utils/authUtil";
 import {UserWithHash} from "../models/users/userWithHash";
 import {BcriptSrvice} from "../application/bcript-srvice";
+import {UserCreateModel} from "../models/auth/input";
 
 export class userService {
 
@@ -19,6 +18,7 @@ export class userService {
             email,
             passwordHash,
             passwordSalt,
+            isConfirmed: true,
         }
         const createdUserId = await UserRepository.createUser(user);
         if(!createdUserId) {

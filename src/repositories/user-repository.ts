@@ -7,14 +7,18 @@ import {getUserQueryParams} from "../models/users/getUserQueryParams";
 import {UserWithHash} from "../models/users/userWithHash";
 
 export class UserRepository {
-    static async createUser({createdAt, passwordHash, login, passwordSalt, email}: UserDBType): Promise<string | null> {
+    static async createUser({createdAt, passwordHash, login, passwordSalt, email, isConfirmed, registerCode}: UserDBType): Promise<string | null> {
         const existingUser = await usersCollection.findOne({$or: [{login}, {email}]})
         if (existingUser) {
             return null
         }
 
-        const createdUser = await usersCollection.insertOne({email, createdAt, login, passwordSalt, passwordHash})
+        const createdUser = await usersCollection.insertOne({email, createdAt, login, passwordSalt, passwordHash, isConfirmed,registerCode})
         return createdUser.insertedId.toString()
+    }
+
+    static async updateUser(id: string, {isConfirmed, registerCode}: {isConfirmed: boolean, registerCode: string | null}) {
+        return await usersCollection.findOneAndUpdate({_id: new ObjectId(id)}, {$set: {isConfirmed, registerCode}})
     }
 
     static async getUserById(id: string): Promise<UserVM | null> {
@@ -29,7 +33,8 @@ export class UserRepository {
             id: foundUser._id.toString(),
             login: foundUser.login,
             passwordHash: foundUser.passwordHash,
-            passwordSalt: foundUser.passwordSalt
+            passwordSalt: foundUser.passwordSalt,
+            isConfirmed: foundUser.isConfirmed
         } : null
     }
 

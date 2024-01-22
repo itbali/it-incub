@@ -21,6 +21,8 @@ export type UserDBType = {
     createdAt:  string,
     passwordHash: string,
     passwordSalt: string,
+    registerCode?: string | null
+    isConfirmed: boolean,
 }
 
 export type CommentDBType = {
