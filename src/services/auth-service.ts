@@ -40,10 +40,7 @@ export class AuthService {
     static async confirmEmail(confirmCode: string): Promise<boolean> {
         const {data:email} = JwtService.decodeJwtToken(confirmCode) as JwtPayload
         const user = await userService.getUserByEmailOrLogin(email)
-        if(!user || user.isConfirmed){
-            return false
-        }
-        await UserRepository.updateUser(user.id, {
+        await UserRepository.updateUser(user!.id, {
             isConfirmed: true,
             registerCode: null
         })

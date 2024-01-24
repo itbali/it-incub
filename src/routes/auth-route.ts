@@ -3,10 +3,12 @@ import {RequestWithBody, RequestWithQuery} from "../models/common/RequestTypes";
 import {LoginModel, UserCreateModel} from "../models/auth/input";
 import {AuthService} from "../services/auth-service";
 import {loginValidation} from "../validators/login-validator";
+import {registerValidation} from "../validators/register-validatior";
+import {emailConfirmationValidator} from "../validators/email-confirmation-validator";
 
 export const authRoute = Router();
 
-authRoute.post("/registration",async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
+authRoute.post("/registration",registerValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
     const createdUser = await AuthService.register({
         email: req.body.email,
         login: req.body.login,
@@ -16,25 +18,25 @@ authRoute.post("/registration",async (req: RequestWithBody<UserCreateModel>, res
         res.sendStatus(400);
         return;
     }
-    res.status(201).send(createdUser);
+    res.status(204).send(createdUser);
 })
 
-authRoute.post("/registration-confirmation",async (req: RequestWithQuery<{code:string}>,res: Response)=>{
+authRoute.post("/registration-confirmation", emailConfirmationValidator(), async (req: RequestWithQuery<{code:string}>,res: Response)=>{
     const confirmResult = await AuthService.confirmEmail(req.query.code);
     if(!confirmResult){
         res.sendStatus(400);
         return;
     }
-    res.sendStatus(200);
+    res.sendStatus(204);
 })
 
-authRoute.post("/registration-email-resending",async (req: RequestWithBody<{email:string}>,res: Response)=>{
+authRoute.post("/registration-email-resending", emailConfirmationValidator(), async (req: RequestWithBody<{email:string}>,res: Response)=>{
     const confirmResult = await AuthService.resendConfirmEmail(req.body.email);
     if(!confirmResult){
         res.sendStatus(400);
         return;
     }
-    res.sendStatus(200);
+    res.sendStatus(204);
 });
 
 authRoute.post("/login", loginValidation(), async (req: RequestWithBody<LoginModel>, res: Response) => {
@@ -58,8 +60,4 @@ authRoute.get("/me", async (req: Request, res: Response) => {
         return;
     }
     res.send(user);
-})
-
-authRoute.post("/registration-email-resending",(req: Request, res: Response)=>{
-
 })
