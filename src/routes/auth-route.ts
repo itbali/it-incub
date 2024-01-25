@@ -5,7 +5,7 @@ import {AuthService} from "../services/auth-service";
 import {loginValidation} from "../validators/login-validator";
 import {registerValidation} from "../validators/register-validatior";
 import {emailConfirmationValidator} from "../validators/email-confirmation-validator";
-import {emailQueryCodeValidation} from "../validators/email-query-confirmation-validator";
+import {emailResendingValidator} from "../validators/email-resending-validatior";
 
 export const authRoute = Router();
 
@@ -22,7 +22,7 @@ authRoute.post("/registration",registerValidation(), async (req: RequestWithBody
     res.status(204).send(createdUser);
 })
 
-authRoute.post("/registration-confirmation", emailQueryCodeValidation(), async (req: RequestWithQuery<{code:string}>,res: Response)=>{
+authRoute.post("/registration-confirmation", emailConfirmationValidator(), async (req: RequestWithQuery<{code:string}>,res: Response)=>{
     const confirmResult = await AuthService.confirmEmail(req.query.code);
     if(!confirmResult){
         res.sendStatus(400);
@@ -31,7 +31,7 @@ authRoute.post("/registration-confirmation", emailQueryCodeValidation(), async (
     res.sendStatus(204);
 })
 
-authRoute.post("/registration-email-resending", emailConfirmationValidator(), async (req: RequestWithBody<{email:string}>,res: Response)=>{
+authRoute.post("/registration-email-resending", emailResendingValidator(), async (req: RequestWithBody<{email:string}>,res: Response)=>{
     const confirmResult = await AuthService.resendConfirmEmail(req.body.email);
     if(!confirmResult){
         res.sendStatus(400);

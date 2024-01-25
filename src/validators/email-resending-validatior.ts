@@ -14,4 +14,4 @@ export const emailValidator = body('email')
     })
     .withMessage("Incorrect email");
 
-export const emailConfirmationValidator = () => [emailValidator, inputModelValidation]
+export const emailResendingValidator = () => [emailValidator, inputModelValidation]
