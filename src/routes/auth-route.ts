@@ -22,8 +22,8 @@ authRoute.post("/registration",registerValidation(), async (req: RequestWithBody
     res.status(204).send(createdUser);
 })
 
-authRoute.post("/registration-confirmation", emailConfirmationValidator(), async (req: RequestWithQuery<{code:string}>,res: Response)=>{
-    const confirmResult = await AuthService.confirmEmail(req.query.code);
+authRoute.post("/registration-confirmation", emailConfirmationValidator(), async (req: RequestWithBody<{code:string}>,res: Response)=>{
+    const confirmResult = await AuthService.confirmEmail(req.body.code);
     if(!confirmResult){
         res.sendStatus(400);
         return;
