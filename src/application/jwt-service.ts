@@ -16,6 +16,11 @@ export class JwtService {
     }
 
     static decodeJwtToken(token: string) {
-        return jwt.decode(token);
+        try{
+            return jwt.decode(token);
+        }
+        catch (e) {
+            throw new Error(JSON.stringify(e))
+        }
     }
 }
