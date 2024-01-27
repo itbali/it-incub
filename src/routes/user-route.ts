@@ -1,5 +1,5 @@
 import {Router, Request, Response} from "express";
-import {userService} from "../services/user-service";
+import {UserService} from "../services/user-service";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {RequestWithBody, RequestWithQuery} from "../models/common/RequestTypes";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
@@ -9,7 +9,7 @@ import {UserCreateModel} from "../models/auth/input";
 export const userRoute = Router();
 
 userRoute.get("/",authMiddleware, async (req: RequestWithQuery<getUserQueryParams>, res: Response)=>{
-    const users = await userService.getAllUsers({
+    const users = await UserService.getAllUsers({
         sortBy: req.query.sortBy,
         sortDirection: req.query.sortDirection,
         pageSize: req.query.pageSize,
@@ -20,7 +20,7 @@ userRoute.get("/",authMiddleware, async (req: RequestWithQuery<getUserQueryParam
     res.send(users)
 })
 userRoute.post("/", authMiddleware, userValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
-    const createdUser = await userService.createUser({
+    const createdUser = await UserService.createUser({
         email: req.body.email,
         login: req.body.login,
         password: req.body.password
@@ -32,7 +32,7 @@ userRoute.post("/", authMiddleware, userValidation(), async (req: RequestWithBod
     res.status(201).send(createdUser)
 })
 userRoute.delete("/:id", authMiddleware, async (req: Request<{id:string}>, res: Response)=>{
-    const deletedUser = await userService.deleteUser(req.params.id)
+    const deletedUser = await UserService.deleteUser(req.params.id)
     if(!deletedUser){
         res.sendStatus(404)
         return

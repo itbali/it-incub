@@ -5,9 +5,11 @@ import {blogsCollection, commentsCollection, postsCollection, usersCollection} f
 import {userRoute} from "./routes/user-route";
 import {authRoute} from "./routes/auth-route";
 import {commentRoute} from "./routes/comment-route";
+import cookieParser from "cookie-parser";
 
 export const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 app.delete("/testing/all-data", async (_req: Request, res: Response) => {
     await blogsCollection.deleteMany({});

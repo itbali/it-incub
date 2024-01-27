@@ -1,11 +1,12 @@
 import {Router, Response, Request} from "express";
-import {RequestWithBody, RequestWithQuery} from "../models/common/RequestTypes";
+import {RequestWithBody} from "../models/common/RequestTypes";
 import {LoginModel, UserCreateModel} from "../models/auth/input";
 import {AuthService} from "../services/auth-service";
 import {loginValidation} from "../validators/login-validator";
 import {registerValidation} from "../validators/register-validatior";
 import {emailConfirmationValidator} from "../validators/email-confirmation-validator";
 import {emailResendingValidator} from "../validators/email-resending-validatior";
+import {UserService} from "../services/user-service";
 
 export const authRoute = Router();
 
@@ -46,7 +47,23 @@ authRoute.post("/login", loginValidation(), async (req: RequestWithBody<LoginMod
         res.sendStatus(401);
         return;
     }
-    res.status(200).send({accessToken:loginResult});
+    res.cookie("refreshToken", loginResult.refreshToken, {httpOnly: true, secure: true})
+    res.status(200).send({accessToken:loginResult.accessToken});
+})
+
+authRoute.post("refresh-token", async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+        res.sendStatus(401);
+        return;
+    }
+    const refreshResult = await AuthService.refreshToken(refreshToken);
+    if (!refreshResult) {
+        res.sendStatus(401);
+        return;
+    }
+    res.cookie("refreshToken", refreshResult.refreshToken, {httpOnly: true, sameSite: "strict"})
+    res.status(200).send({accessToken:refreshResult.accessToken});
 })
 
 authRoute.get("/me", async (req: Request, res: Response) => {
@@ -55,10 +72,25 @@ authRoute.get("/me", async (req: Request, res: Response) => {
         res.sendStatus(401);
         return;
     }
-    const user = await AuthService.getUserIdFromToken(authToken);
+    const user = await UserService.getUserByIdFromToken(authToken);
     if (!user) {
         res.sendStatus(404);
         return;
     }
     res.send(user);
+})
+
+authRoute.post("/logout", async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+        res.sendStatus(401);
+        return;
+    }
+    const user = await UserService.getUserByIdFromToken(refreshToken);
+    if (!user) {
+        res.sendStatus(404);
+        return;
+    }
+    await AuthService.logout(user.id);
+    res.sendStatus(204);
 })

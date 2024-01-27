@@ -5,8 +5,10 @@ import {getUserQueryParams} from "../models/users/getUserQueryParams";
 import {UserWithHash} from "../models/users/userWithHash";
 import {BcriptSrvice} from "../application/bcript-srvice";
 import {UserCreateModel} from "../models/auth/input";
+import {JwtService} from "../application/jwt-service";
+import {JwtPayload} from "jsonwebtoken";
 
-export class userService {
+export class UserService {
 
     static async createUser({password, login, email}: UserCreateModel): Promise<UserVM | null> {
         const passwordSalt =  await BcriptSrvice.generateSalt()
@@ -34,6 +36,16 @@ export class userService {
 
     static async getUserById(id: string): Promise<UserVM | null>{
         return await UserRepository.getUserById(id)
+    }
+
+
+    static async getUserByIdFromToken(token: string) {
+        const isTokenValid = JwtService.verifyJwtToken(token)
+        if (!isTokenValid) {
+            return null
+        }
+        const {data: id} = JwtService.decodeJwtToken(token) as JwtPayload
+        return await UserService.getUserById(id)
     }
 
     static async getUserByEmailOrLogin(loginOrEmail: string): Promise<UserWithHash | null>{

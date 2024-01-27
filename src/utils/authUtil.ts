@@ -1,8 +1,6 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
 import {BcriptSrvice} from "../application/bcript-srvice";
 import {LoginModel} from "../models/auth/input";
-import {userService} from "../services/user-service";
+import {UserService} from "../services/user-service";
 import {JwtService} from "../application/jwt-service";
 
 export class AuthUtil {
@@ -11,7 +9,7 @@ export class AuthUtil {
     }
 
     static async login(credentials: LoginModel) {
-        const user = await userService.getUserByEmailOrLogin(credentials.loginOrEmail)
+        const user = await UserService.getUserByEmailOrLogin(credentials.loginOrEmail)
         if(!user){
             return null
         }

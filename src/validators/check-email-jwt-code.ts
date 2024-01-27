@@ -1,6 +1,6 @@
 import {JwtService} from "../application/jwt-service";
 import {JwtPayload} from "jsonwebtoken";
-import {userService} from "../services/user-service";
+import {UserService} from "../services/user-service";
 
 export const checkEmailJwtCode = async (confirmCode: string) => {
     const valid = JwtService.verifyJwtToken(confirmCode)
@@ -11,7 +11,7 @@ export const checkEmailJwtCode = async (confirmCode: string) => {
     if (!email) {
         throw Error("Incorrect code");
     }
-    const user = await userService.getUserByEmailOrLogin(email)
+    const user = await UserService.getUserByEmailOrLogin(email)
     if (!user || user.isConfirmed) {
         throw Error("Incorrect code");
     }

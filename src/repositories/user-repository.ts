@@ -17,13 +17,18 @@ export class UserRepository {
         return createdUser.insertedId.toString()
     }
 
-    static async updateUser(id: string, {isConfirmed, registerCode}: {isConfirmed: boolean, registerCode: string | null}) {
-        return await usersCollection.findOneAndUpdate({_id: new ObjectId(id)}, {$set: {isConfirmed, registerCode}})
+    static async updateUser(id: string, {isConfirmed, registerCode, refreshToken}: {isConfirmed?: boolean, registerCode?: string | null, refreshToken?: string | null}) {
+        return await usersCollection.findOneAndUpdate({_id: new ObjectId(id)}, {$set: {isConfirmed, registerCode, refreshToken}})
     }
 
     static async getUserById(id: string): Promise<UserVM | null> {
         const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
         return foundUser ? userMapper(foundUser) : null
+    }
+
+    static async validateUserRefreshToken(id: string, refreshToken: string): Promise<boolean> {
+        const foundUser = await usersCollection.findOne({_id: new ObjectId(id), refreshToken})
+        return !!foundUser
     }
 
     static async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserWithHash | null> {
