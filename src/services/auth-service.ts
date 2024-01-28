@@ -94,6 +94,7 @@ export class AuthService {
         }
         const {data: id} = JwtService.decodeJwtToken(refreshToken) as JwtPayload
         const isRefreshTokenValid = await UserRepository.validateUserRefreshToken(id, refreshToken)
+        console.log("logout", {isRefreshTokenValid})
         if (!isRefreshTokenValid) {
             return false
         }

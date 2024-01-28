@@ -89,7 +89,7 @@ authRoute.post("/logout", async (req: Request, res: Response) => {
     }
     const user = await UserService.getUserByIdFromToken(refreshToken);
     if (!user) {
-        res.sendStatus(404);
+        res.sendStatus(401);
         return;
     }
     await AuthService.logout(user.userId);
