@@ -1,4 +1,4 @@
-import {GetUsersResponse, UserVM} from "../models/users/output";
+import {GetUsersResponse, meOutput, UserVM} from "../models/users/output";
 import {UserDBType} from "../models/db/db";
 import {UserRepository} from "../repositories/user-repository";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
@@ -39,13 +39,21 @@ export class UserService {
     }
 
 
-    static async getUserByIdFromToken(token: string) {
+    static async getUserByIdFromToken(token: string): Promise<meOutput | null> {
         const isTokenValid = JwtService.verifyJwtToken(token)
         if (!isTokenValid) {
             return null
         }
         const {data: id} = JwtService.decodeJwtToken(token) as JwtPayload
-        return await UserService.getUserById(id)
+        const user = await UserService.getUserById(id)
+        if(!user){
+            return null
+        }
+        return {
+            userId: user.id,
+            email: user.email,
+            login: user.login
+        }
     }
 
     static async getUserByEmailOrLogin(loginOrEmail: string): Promise<UserWithHash | null>{

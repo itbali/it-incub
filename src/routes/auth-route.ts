@@ -7,6 +7,7 @@ import {registerValidation} from "../validators/register-validatior";
 import {emailConfirmationValidator} from "../validators/email-confirmation-validator";
 import {emailResendingValidator} from "../validators/email-resending-validatior";
 import {UserService} from "../services/user-service";
+import {meOutput} from "../models/users/output";
 
 export const authRoute = Router();
 
@@ -51,7 +52,7 @@ authRoute.post("/login", loginValidation(), async (req: RequestWithBody<LoginMod
     res.status(200).send({accessToken:loginResult.accessToken});
 })
 
-authRoute.post("refresh-token", async (req: Request, res: Response) => {
+authRoute.post("/refresh-token", async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
         res.sendStatus(401);
@@ -66,7 +67,7 @@ authRoute.post("refresh-token", async (req: Request, res: Response) => {
     res.status(200).send({accessToken:refreshResult.accessToken});
 })
 
-authRoute.get("/me", async (req: Request, res: Response) => {
+authRoute.get("/me", async (req: Request, res: Response<meOutput | number>) => {
     const authToken = req.headers.authorization?.split(" ")[1];
     if (!authToken) {
         res.sendStatus(401);
@@ -74,7 +75,7 @@ authRoute.get("/me", async (req: Request, res: Response) => {
     }
     const user = await UserService.getUserByIdFromToken(authToken);
     if (!user) {
-        res.sendStatus(404);
+        res.sendStatus(401);
         return;
     }
     res.send(user);
@@ -91,6 +92,6 @@ authRoute.post("/logout", async (req: Request, res: Response) => {
         res.sendStatus(404);
         return;
     }
-    await AuthService.logout(user.id);
+    await AuthService.logout(user.userId);
     res.sendStatus(204);
 })

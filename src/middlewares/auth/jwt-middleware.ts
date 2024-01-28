@@ -14,6 +14,6 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
         res.sendStatus(401)
         return;
     }
-    req.userId = user.id
+    req.userId = user.userId
     next();
 }

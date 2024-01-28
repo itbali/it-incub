@@ -5,6 +5,12 @@ export type UserVM = {
     createdAt: string,
 }
 
+export type meOutput = {
+    email: string,
+    login: string,
+    userId: string,
+}
+
 export type GetUsersResponse = {
     pagesCount: number,
     page: number,
