@@ -81,8 +81,8 @@ export class AuthService {
         if (!isRefreshTokenValid) {
             return null
         }
-        const newAccessToken = JwtService.generateJwtToken(id, 300)
-        const newRefreshToken = JwtService.generateJwtToken(id, 3600)
+        const newAccessToken = JwtService.generateJwtToken(id, 10)
+        const newRefreshToken = JwtService.generateJwtToken(id, 20)
         await UserRepository.updateUser(id, {refreshToken:newRefreshToken})
         return {accessToken: newAccessToken, refreshToken: newRefreshToken}
     }
