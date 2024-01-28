@@ -92,6 +92,10 @@ authRoute.post("/logout", async (req: Request, res: Response) => {
         res.sendStatus(401);
         return;
     }
-    await AuthService.logout(user.userId);
+    const logoutResult = await AuthService.logout(refreshToken);
+    if(!logoutResult){
+        res.sendStatus(401)
+        return
+    }
     res.sendStatus(204);
 })

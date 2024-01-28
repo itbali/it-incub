@@ -3,10 +3,6 @@ import {inputModelValidation} from "../middlewares/input-model-validation/input-
 import {checkEmailJwtCode} from "./check-email-jwt-code";
 
 const codeValidator = body('code')
-    .custom((value:string)=>{
-        console.log(value)
-        return true
-    })
     .trim()
     .isString()
     .custom(checkEmailJwtCode)

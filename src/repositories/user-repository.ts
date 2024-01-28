@@ -28,7 +28,6 @@ export class UserRepository {
 
     static async validateUserRefreshToken(id: string, refreshToken: string): Promise<boolean> {
         const foundUser = await usersCollection.findOne({_id: new ObjectId(id), refreshToken})
-        console.log(foundUser)
         return !!foundUser
     }
 
