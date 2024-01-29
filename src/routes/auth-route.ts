@@ -63,7 +63,7 @@ authRoute.post("/refresh-token", async (req: Request, res: Response) => {
         res.sendStatus(401);
         return;
     }
-    res.cookie("refreshToken", refreshResult.refreshToken, {httpOnly: true, sameSite: "strict"})
+    res.cookie("refreshToken", refreshResult.refreshToken, {httpOnly: true, sameSite: "strict", secure:true})
     res.status(200).send({accessToken:refreshResult.accessToken});
 })
 
