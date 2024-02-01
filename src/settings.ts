@@ -7,6 +7,7 @@ import {authRoute} from "./routes/auth-route";
 import {commentRoute} from "./routes/comment-route";
 import cookieParser from "cookie-parser";
 import {fixEachRequest} from "./middlewares/ip/fixEachRequest";
+import {securityRoute} from "./routes/security-route";
 
 export const app = express();
 app.use(express.json());
@@ -27,3 +28,4 @@ app.use("/posts", postRoute)
 app.use("/users", userRoute)
 app.use("/auth", authRoute)
 app.use("/comments", commentRoute)
+app.use("/security", securityRoute)
