@@ -64,7 +64,7 @@ export class AuthService {
         }
         if (await AuthUtil.validatePassword(credentials.password, user.passwordSalt, user.passwordHash)) {
             const accessToken = JwtService.generateJwtToken(user.id, 10)
-            const refreshToken = JwtService.generateJwtToken(user.id, 20, {deviceId: Date.now().toString(), title:  credentials.userAgentTitle, ip: credentials.ip})
+            const refreshToken = JwtService.generateJwtToken(user.id, 2000, {deviceId: Date.now().toString(), title:  credentials.userAgentTitle, ip: credentials.ip})
             await UserRepository.updateUser(user.id, {refreshToken})
             return {accessToken, refreshToken}
         }

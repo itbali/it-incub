@@ -50,12 +50,13 @@ export class UserRepository {
         registerCode?: string | null,
         refreshToken?: string | null
     }) {
-        const userRefreshTokens = await UserRepository.getUserDevicesInfo(id) || []
+        const user = await usersCollection.findOne({_id: new ObjectId(id)})
+        const userRefreshTokens = user?.refreshTokens || []
         return await usersCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
             $set: {
                 isConfirmed,
                 registerCode,
-                refreshToken: refreshToken ? [...userRefreshTokens, refreshToken] : userRefreshTokens
+                refreshTokens: refreshToken ? [...userRefreshTokens, refreshToken] : userRefreshTokens
             }
         })
     }
