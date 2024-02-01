@@ -5,20 +5,68 @@ import {userMapper} from "../models/users/mappers/userMapper";
 import {ObjectId} from "mongodb";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
 import {UserWithHash} from "../models/users/userWithHash";
+import {JwtService} from "../application/jwt-service";
+import {DeviceInfo} from "../models/security/devicesInfo";
 
 export class UserRepository {
-    static async createUser({createdAt, passwordHash, login, passwordSalt, email, isConfirmed, registerCode}: UserDBType): Promise<string | null> {
+    static async createUser({
+                                createdAt,
+                                passwordHash,
+                                login,
+                                passwordSalt,
+                                email,
+                                isConfirmed,
+                                registerCode
+                            }: UserDBType): Promise<string | null> {
         const existingUser = await usersCollection.findOne({$or: [{login}, {email}]})
         if (existingUser) {
             return null
         }
 
-        const createdUser = await usersCollection.insertOne({email, createdAt, login, passwordSalt, passwordHash, isConfirmed,registerCode})
+        const createdUser = await usersCollection.insertOne({
+            email,
+            createdAt,
+            login,
+            passwordSalt,
+            passwordHash,
+            isConfirmed,
+            registerCode
+        })
         return createdUser.insertedId.toString()
     }
 
-    static async updateUser(id: string, {isConfirmed, registerCode, refreshToken}: {isConfirmed?: boolean, registerCode?: string | null, refreshToken?: string | null}) {
-        return await usersCollection.findOneAndUpdate({_id: new ObjectId(id)}, {$set: {isConfirmed, registerCode, refreshToken}})
+    static async getUserDevicesInfo(id: string): Promise<DeviceInfo[] | null> {
+        const user = await usersCollection.findOne({_id: new ObjectId(id)})
+        return user?.refreshTokens
+            ? user.refreshTokens.map(rt => {
+                const { deviceId,title,ip, iat} = JwtService.decodeJwtToken(rt)
+                return {ip, title, deviceId, lastActiveDate: iat!.toString()}
+            })
+            : null
+    }
+
+    static async updateUser(id: string, {isConfirmed, registerCode, refreshToken}: {
+        isConfirmed?: boolean,
+        registerCode?: string | null,
+        refreshToken?: string | null
+    }) {
+        const userRefreshTokens = await UserRepository.getUserDevicesInfo(id) || []
+        return await usersCollection.findOneAndUpdate({_id: new ObjectId(id)}, {
+            $set: {
+                isConfirmed,
+                registerCode,
+                refreshToken: refreshToken ? [...userRefreshTokens, refreshToken] : userRefreshTokens
+            }
+        })
+    }
+
+    static async removeRefreshToken(id: string, refreshToken: string) {
+        const userRefreshTokens = await UserRepository.getUserDevicesInfo(id) || []
+        const {deviceId} = JwtService.decodeJwtToken(refreshToken)
+        return await usersCollection.findOneAndUpdate(
+            {_id: new ObjectId(id)},
+            {$set: {refreshToken: userRefreshTokens.filter(rt => rt.deviceId !== deviceId)}}
+        )
     }
 
     static async getUserById(id: string): Promise<UserVM | null> {

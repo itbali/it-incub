@@ -23,7 +23,7 @@ export type UserDBType = {
     passwordSalt: string,
     registerCode?: string | null
     isConfirmed: boolean,
-    refreshToken?: string | null
+    refreshTokens?: string[] | null
 }
 
 export type CommentDBType = {

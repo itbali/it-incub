@@ -1,9 +1,10 @@
-import jwt from "jsonwebtoken";
+import jwt, {JwtPayload} from "jsonwebtoken";
 
 export class JwtService {
 
-    public static generateJwtToken(data:string, expiresIn: string|number = "1h") {
-        return jwt.sign({data},process.env.SECRET_KEY as string, {expiresIn})
+    public static generateJwtToken(data:string, expiresIn: string|number = "1h", extraData: ExtraData = {}) {
+        const signData = Object.assign({data}, extraData)
+        return jwt.sign(signData,process.env.SECRET_KEY as string, {expiresIn})
     }
 
     static verifyJwtToken(token: string) {
@@ -17,10 +18,16 @@ export class JwtService {
 
     static decodeJwtToken(token: string) {
         try{
-            return jwt.decode(token);
+            return jwt.decode(token) as JwtPayload;
         }
         catch (e) {
             throw new Error(JSON.stringify(e))
         }
     }
+}
+
+type ExtraData = {
+    deviceId?: string,
+    title?: string,
+    ip?: string
 }

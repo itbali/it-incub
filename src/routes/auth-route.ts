@@ -44,8 +44,8 @@ authRoute.post("/registration-email-resending", emailResendingValidator(), async
 });
 
 authRoute.post("/login", loginValidation(), async (req: RequestWithBody<LoginModel>, res: Response) => {
-    console.log(req.ip)
-    const loginResult = await AuthService.login(req.body);
+    const userAgentTitle = req.headers["user-agent"]?.split(" ")[1].replace("(","").replace(")","");
+    const loginResult = await AuthService.login({loginOrEmail: req.body.loginOrEmail, password: req.body.password, userAgentTitle, ip: req.ip});
     if (!loginResult) {
         res.sendStatus(401);
         return;

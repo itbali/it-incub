@@ -8,6 +8,7 @@ export class AuthUtil {
         return BcriptSrvice.validatePasswordWithSalt(password, salt, hash)
     }
 
+    //TODO CHECKUP
     static async login(credentials: LoginModel) {
         const user = await UserService.getUserByEmailOrLogin(credentials.loginOrEmail)
         if(!user){

@@ -1,6 +1,8 @@
 export type LoginModel = {
     loginOrEmail: string;
     password: string;
+    userAgentTitle?: string;
+    ip?: string;
 }
 
 export type UserCreateModel = {
