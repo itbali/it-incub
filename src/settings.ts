@@ -10,6 +10,10 @@ import cookieParser from "cookie-parser";
 export const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use((req,_res,next)=>{
+    console.log(req.ip)
+    next()
+})
 
 app.delete("/testing/all-data", async (_req: Request, res: Response) => {
     await blogsCollection.deleteMany({});
@@ -24,4 +28,3 @@ app.use("/posts", postRoute)
 app.use("/users", userRoute)
 app.use("/auth", authRoute)
 app.use("/comments", commentRoute)
-
