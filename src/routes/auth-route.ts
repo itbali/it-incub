@@ -8,10 +8,11 @@ import {emailConfirmationValidator} from "../validators/email-confirmation-valid
 import {emailResendingValidator} from "../validators/email-resending-validatior";
 import {UserService} from "../services/user-service";
 import {meOutput} from "../models/users/output";
+import {attempRegistrationValidation} from "../middlewares/ip/attempRegistrationValidation";
 
 export const authRoute = Router();
 
-authRoute.post("/registration",registerValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
+authRoute.post("/registration",attempRegistrationValidation, registerValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
     const createdUser = await AuthService.register({
         email: req.body.email,
         login: req.body.login,
