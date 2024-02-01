@@ -40,7 +40,7 @@ export class UserRepository {
         return user?.refreshTokens
             ? user.refreshTokens.map(rt => {
                 const { deviceId,title,ip, iat} = JwtService.decodeJwtToken(rt)
-                return {ip, title, deviceId, lastActiveDate: new Date(iat!*1000).toString()}
+                return {ip, title, deviceId, lastActiveDate: new Date(iat!*1000).toISOString()}
             })
             : null
     }
