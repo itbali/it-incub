@@ -37,5 +37,4 @@ export type CommentDBType = {
     }
 }
 
-type ApiRequest = {IP:string, URL:string, date:Date}
-export type ApiRequestDBType = ApiRequest[]
+export type ApiRequestDbType = {IP:string, URL:string, date:Date}

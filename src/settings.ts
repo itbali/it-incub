@@ -6,14 +6,12 @@ import {userRoute} from "./routes/user-route";
 import {authRoute} from "./routes/auth-route";
 import {commentRoute} from "./routes/comment-route";
 import cookieParser from "cookie-parser";
+import {fixEachRequest} from "./middlewares/ip/fixEachRequest";
 
 export const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use((req,_res,next)=>{
-    console.log(req.ip)
-    next()
-})
+app.use(fixEachRequest);
 
 app.delete("/testing/all-data", async (_req: Request, res: Response) => {
     await blogsCollection.deleteMany({});
