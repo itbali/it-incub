@@ -125,4 +125,13 @@ export class UserRepository {
         const foundUser = await usersCollection.findOneAndDelete({_id: new ObjectId(id)})
         return foundUser ? userMapper(foundUser) : null
     }
+
+    static async removeRefreshTokensExceptCurrent(id: string, deviceId: string) {
+        const user = await usersCollection.findOne({_id: new ObjectId(id)})
+        const userRefreshTokens = user?.refreshTokens || []
+        return await usersCollection.findOneAndUpdate(
+            {_id: new ObjectId(id)},
+            {$set: {refreshTokens: userRefreshTokens.filter(rt => JwtService.decodeJwtToken(rt).deviceId === deviceId)}}
+        )
+    }
 }

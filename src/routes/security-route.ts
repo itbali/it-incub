@@ -12,3 +12,17 @@ securityRoute.get("/devices", refreshTokenValidator, async (req: Request, res: R
     const userDevices = await SecurityService.getDevices(userId)
     res.send(userDevices)
 })
+
+securityRoute.delete("/devices", refreshTokenValidator, async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken;
+    const {data: userId, deviceId } = JwtService.decodeJwtToken(refreshToken)
+    await SecurityService.removeDevicesExceptCurrent(userId, deviceId)
+    res.sendStatus(204)
+})
+
+securityRoute.delete("/devices/:deviceId", refreshTokenValidator, async (req: Request, res: Response) => {
+    const refreshToken = req.cookies.refreshToken;
+    const {data: userId} = JwtService.decodeJwtToken(refreshToken)
+    await SecurityService.removeDevice(userId, req.params.deviceId)
+    res.sendStatus(204)
+});
