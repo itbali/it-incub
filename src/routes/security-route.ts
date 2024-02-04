@@ -21,7 +21,7 @@ securityRoute.delete("/devices", refreshTokenValidator, async (req: Request, res
     res.sendStatus(204)
 })
 
-securityRoute.delete("/devices/:deviceId", isUserDeviceValidator, refreshTokenValidator, async (req: Request, res: Response) => {
+securityRoute.delete("/devices/:deviceId", refreshTokenValidator, isUserDeviceValidator, async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     const deviceId = req.params.deviceId;
     const removeDeviceResult = await SecurityService.removeDevice(deviceId, refreshToken)
