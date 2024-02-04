@@ -143,4 +143,17 @@ export class UserRepository {
         const user = await usersCollection.findOne({_id: new ObjectId(id)})
         return user?.refreshTokens || null
     }
+
+    static async getAllDevices(): Promise<DeviceInfo[]> {
+        const users = await usersCollection.find().toArray()
+        return users.reduce<DeviceInfo[]>((acc, user) => {
+            if (user.refreshTokens) {
+                acc.push(...user.refreshTokens.map(rt => {
+                    const {deviceId, title, ip, iat} = JwtService.decodeJwtToken(rt)
+                    return {deviceId, title, ip, lastActiveDate: new Date(iat!*1000).toISOString()}
+                }))
+            }
+            return acc
+        }, [])
+    }
 }

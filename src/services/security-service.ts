@@ -3,7 +3,7 @@ import {DeviceInfo} from "../models/security/devicesInfo";
 import {JwtService} from "../application/jwt-service";
 
 export class SecurityService {
-    static async getDevices(userId: string): Promise<DeviceInfo[] | null> {
+    static async getUserDevices(userId: string): Promise<DeviceInfo[] | null> {
         return UserRepository.getUserDevicesInfo(userId)
     }
 
@@ -25,5 +25,9 @@ export class SecurityService {
             return null
         }
         return UserRepository.removeRefreshToken(refreshTokenForRemove)
+    }
+
+    static async getAllDevices() {
+        return UserRepository.getAllDevices()
     }
 }

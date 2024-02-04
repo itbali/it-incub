@@ -10,7 +10,7 @@ export const securityRoute = Router();
 securityRoute.get("/devices", refreshTokenValidator, async (req: Request, res: Response<DeviceInfo[] | null>) => {
     const refreshToken = req.cookies.refreshToken;
     const {data: userId} = JwtService.decodeJwtToken(refreshToken)
-    const userDevices = await SecurityService.getDevices(userId)
+    const userDevices = await SecurityService.getUserDevices(userId)
     res.send(userDevices)
 })
 
