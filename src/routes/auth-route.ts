@@ -8,11 +8,12 @@ import {emailConfirmationValidator} from "../validators/email-confirmation-valid
 import {emailResendingValidator} from "../validators/email-resending-validatior";
 import {UserService} from "../services/user-service";
 import {meOutput} from "../models/users/output";
-import {attempRegistrationValidation} from "../middlewares/ip/attempRegistrationValidation";
+import {refreshTokenValidator} from "../validators/refresh-token-validator";
+import {ipAttemptsValidator} from "../validators/ip-attempts-validator";
 
 export const authRoute = Router();
 
-authRoute.post("/registration",attempRegistrationValidation, registerValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
+authRoute.post("/registration", ipAttemptsValidator, registerValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
     const createdUser = await AuthService.register({
         email: req.body.email,
         login: req.body.login,
@@ -25,7 +26,7 @@ authRoute.post("/registration",attempRegistrationValidation, registerValidation(
     res.status(204).send(createdUser);
 })
 
-authRoute.post("/registration-confirmation", emailConfirmationValidator(), async (req: RequestWithBody<{code:string}>,res: Response)=>{
+authRoute.post("/registration-confirmation", ipAttemptsValidator, emailConfirmationValidator(), async (req: RequestWithBody<{code:string}>,res: Response)=>{
     const confirmResult = await AuthService.confirmEmail(req.body.code);
     if(!confirmResult){
         res.sendStatus(400);
@@ -34,7 +35,7 @@ authRoute.post("/registration-confirmation", emailConfirmationValidator(), async
     res.sendStatus(204);
 })
 
-authRoute.post("/registration-email-resending", emailResendingValidator(), async (req: RequestWithBody<{email:string}>,res: Response)=>{
+authRoute.post("/registration-email-resending", ipAttemptsValidator, emailResendingValidator(), async (req: RequestWithBody<{email:string}>,res: Response)=>{
     const confirmResult = await AuthService.resendConfirmEmail(req.body.email);
     if(!confirmResult){
         res.sendStatus(400);
@@ -43,7 +44,7 @@ authRoute.post("/registration-email-resending", emailResendingValidator(), async
     res.sendStatus(204);
 });
 
-authRoute.post("/login", loginValidation(), async (req: RequestWithBody<LoginModel>, res: Response) => {
+authRoute.post("/login", ipAttemptsValidator,  loginValidation(), async (req: RequestWithBody<LoginModel>, res: Response) => {
     const userAgentTitle = req.headers["user-agent"]
         ? req.headers["user-agent"]
         : "unknown";
@@ -56,12 +57,8 @@ authRoute.post("/login", loginValidation(), async (req: RequestWithBody<LoginMod
     res.status(200).send({accessToken:loginResult.accessToken});
 })
 
-authRoute.post("/refresh-token", async (req: Request, res: Response) => {
+authRoute.post("/refresh-token", refreshTokenValidator, async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-        res.sendStatus(401);
-        return;
-    }
     const refreshResult = await AuthService.refreshToken(refreshToken);
     if (!refreshResult) {
         res.sendStatus(401);
@@ -85,12 +82,8 @@ authRoute.get("/me", async (req: Request, res: Response<meOutput | number>) => {
     res.send(user);
 })
 
-authRoute.post("/logout", async (req: Request, res: Response) => {
+authRoute.post("/logout", refreshTokenValidator, async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-        res.sendStatus(401);
-        return;
-    }
     const user = await UserService.getUserByIdFromToken(refreshToken);
     if (!user) {
         res.sendStatus(401);

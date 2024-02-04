@@ -72,10 +72,6 @@ export class AuthService {
     }
 
     static async refreshToken(refreshToken: string): Promise<{ accessToken: string, refreshToken: string } | null> {
-        const isTokenValid = JwtService.verifyJwtToken(refreshToken)
-        if (!isTokenValid) {
-            return null
-        }
         const {data: id} = JwtService.decodeJwtToken(refreshToken) as JwtPayload
         const isRefreshTokenValid = await UserRepository.validateUserRefreshToken(id, refreshToken)
         if (!isRefreshTokenValid) {
