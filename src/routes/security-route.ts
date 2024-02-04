@@ -3,6 +3,7 @@ import {SecurityService} from "../services/security-service";
 import {JwtService} from "../application/jwt-service";
 import {DeviceInfo} from "../models/security/devicesInfo";
 import {refreshTokenValidator} from "../validators/refresh-token-validator";
+import {isUserDeviceValidator} from "../validators/is-user-device-validator";
 
 export const securityRoute = Router();
 
@@ -20,14 +21,9 @@ securityRoute.delete("/devices", refreshTokenValidator, async (req: Request, res
     res.sendStatus(204)
 })
 
-securityRoute.delete("/devices/:deviceId", refreshTokenValidator, async (req: Request, res: Response) => {
+securityRoute.delete("/devices/:deviceId", isUserDeviceValidator, refreshTokenValidator, async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
     const deviceId = req.params.deviceId;
-    const {deviceId: userDeviceId} = JwtService.decodeJwtToken(refreshToken)
-    if (deviceId === userDeviceId) {
-        res.sendStatus(403)
-        return
-    }
     const removeDeviceResult = await SecurityService.removeDevice(deviceId, refreshToken)
     if (!removeDeviceResult) {
         res.sendStatus(404)

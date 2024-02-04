@@ -95,6 +95,7 @@ export class AuthService {
             return false
         }
         await UserRepository.updateUser(id, {refreshToken: null})
+        await UserRepository.removeRefreshToken(refreshToken)
         return true
     }
 }
