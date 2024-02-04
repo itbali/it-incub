@@ -77,8 +77,9 @@ export class UserRepository {
     }
 
     static async validateUserRefreshToken(id: string, refreshToken: string): Promise<boolean> {
-        const foundUser = await usersCollection.findOne({_id: new ObjectId(id), refreshToken})
-        return !!foundUser
+        const foundUser = await usersCollection.findOne({_id: new ObjectId(id)})
+        const userRefreshTokens = foundUser?.refreshTokens || []
+        return userRefreshTokens.includes(refreshToken)
     }
 
     static async getUserByLoginOrEmail(loginOrEmail: string): Promise<UserWithHash | null> {

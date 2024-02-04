@@ -63,7 +63,7 @@ export class AuthService {
             return null
         }
         if (await AuthUtil.validatePassword(credentials.password, user.passwordSalt, user.passwordHash)) {
-            const accessToken = JwtService.generateJwtToken(user.id, 10)
+            const accessToken = JwtService.generateJwtToken(user.id, 100)
             const refreshToken = JwtService.generateJwtToken(user.id, 2000, {deviceId: Date.now().toString(), title:  credentials.userAgentTitle, ip: credentials.ip})
             await UserRepository.updateUser(user.id, {refreshToken})
             return {accessToken, refreshToken}
@@ -77,9 +77,9 @@ export class AuthService {
         if (!isRefreshTokenValid) {
             return null
         }
-        const newAccessToken = JwtService.generateJwtToken(id, 10)
+        const newAccessToken = JwtService.generateJwtToken(id, 100)
         await UserRepository.removeRefreshToken(refreshToken)
-        const newRefreshToken = JwtService.generateJwtToken(id, 20)
+        const newRefreshToken = JwtService.generateJwtToken(id, 2000)
         await UserRepository.updateUser(id, {refreshToken:newRefreshToken})
         return {accessToken: newAccessToken, refreshToken: newRefreshToken}
     }
