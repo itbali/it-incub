@@ -72,14 +72,14 @@ export class AuthService {
     }
 
     static async refreshToken(refreshToken: string): Promise<{ accessToken: string, refreshToken: string } | null> {
-        const {data: id} = JwtService.decodeJwtToken(refreshToken) as JwtPayload
+        const {data: id, deviceId, title, ip} = JwtService.decodeJwtToken(refreshToken) as JwtPayload
         const isRefreshTokenValid = await UserRepository.validateUserRefreshToken(id, refreshToken)
         if (!isRefreshTokenValid) {
             return null
         }
         const newAccessToken = JwtService.generateJwtToken(id, 100)
         await UserRepository.removeRefreshToken(refreshToken)
-        const newRefreshToken = JwtService.generateJwtToken(id, 2000)
+        const newRefreshToken = JwtService.generateJwtToken(id, 2000, {deviceId, title, ip})
         await UserRepository.updateUser(id, {refreshToken:newRefreshToken})
         return {accessToken: newAccessToken, refreshToken: newRefreshToken}
     }

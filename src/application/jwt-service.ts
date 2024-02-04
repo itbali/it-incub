@@ -29,5 +29,6 @@ export class JwtService {
 type ExtraData = {
     deviceId?: string,
     title?: string,
-    ip?: string
+    ip?: string,
+    LastActiveDate?: string
 }

@@ -64,10 +64,12 @@ export class UserRepository {
 
     static async removeRefreshToken(refreshToken: string) {
         const {data: id, deviceId} = JwtService.decodeJwtToken(refreshToken) as JwtPayload
-        const userRefreshTokens = await UserRepository.getUserDevicesInfo(id) || []
+        const user = await usersCollection.findOne({_id: new ObjectId(id)})
+        const userRefreshTokens = user?.refreshTokens || []
+        const refreshTokens = userRefreshTokens.filter(rt => JwtService.decodeJwtToken(rt).deviceId !== deviceId)
         return await usersCollection.findOneAndUpdate(
             {_id: new ObjectId(id)},
-            {$set: {refreshToken: userRefreshTokens.filter(rt => rt.deviceId !== deviceId)}}
+            {$set: {refreshTokens}}
         )
     }
 
