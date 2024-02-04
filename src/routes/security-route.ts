@@ -22,7 +22,16 @@ securityRoute.delete("/devices", refreshTokenValidator, async (req: Request, res
 
 securityRoute.delete("/devices/:deviceId", refreshTokenValidator, async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken;
-    const {data: userId} = JwtService.decodeJwtToken(refreshToken)
-    await SecurityService.removeDevice(userId, req.params.deviceId)
+    const deviceId = req.params.deviceId;
+    const {deviceId: userDeviceId} = JwtService.decodeJwtToken(refreshToken)
+    if (deviceId === userDeviceId) {
+        res.sendStatus(403)
+        return
+    }
+    const removeDeviceResult = await SecurityService.removeDevice(deviceId, refreshToken)
+    if (!removeDeviceResult) {
+        res.sendStatus(404)
+        return
+    }
     res.sendStatus(204)
 });

@@ -7,6 +7,7 @@ import {getUserQueryParams} from "../models/users/getUserQueryParams";
 import {UserWithHash} from "../models/users/userWithHash";
 import {JwtService} from "../application/jwt-service";
 import {DeviceInfo} from "../models/security/devicesInfo";
+import {JwtPayload} from "jsonwebtoken";
 
 export class UserRepository {
     static async createUser({
@@ -61,9 +62,9 @@ export class UserRepository {
         })
     }
 
-    static async removeRefreshToken(id: string, refreshToken: string) {
+    static async removeRefreshToken(refreshToken: string) {
+        const {data: id, deviceId} = JwtService.decodeJwtToken(refreshToken) as JwtPayload
         const userRefreshTokens = await UserRepository.getUserDevicesInfo(id) || []
-        const {deviceId} = JwtService.decodeJwtToken(refreshToken)
         return await usersCollection.findOneAndUpdate(
             {_id: new ObjectId(id)},
             {$set: {refreshToken: userRefreshTokens.filter(rt => rt.deviceId !== deviceId)}}
@@ -133,5 +134,10 @@ export class UserRepository {
             {_id: new ObjectId(id)},
             {$set: {refreshTokens: userRefreshTokens.filter(rt => JwtService.decodeJwtToken(rt).deviceId === deviceId)}}
         )
+    }
+
+    static async getUserRefreshTokes(id: string): Promise<string[] | null> {
+        const user = await usersCollection.findOne({_id: new ObjectId(id)})
+        return user?.refreshTokens || null
     }
 }
