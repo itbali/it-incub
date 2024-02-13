@@ -11,6 +11,7 @@ import {meOutput} from "../models/users/output";
 import {refreshTokenValidator} from "../validators/refresh-token-validator";
 import {ipAttemptsValidator} from "../validators/ip-attempts-validator";
 import {newPasswordValidation} from "../validators/new-password-validator";
+import {passwordRecoverEmailValidator} from "../validators/password-recovery-email-validator";
 
 export const authRoute = Router();
 
@@ -106,7 +107,7 @@ authRoute.post("/logout", refreshTokenValidator, async (req: Request, res: Respo
     }
     res.sendStatus(204);
 })
-authRoute.post("/password-recovery", ipAttemptsValidator, emailResendingValidator(), async (req: RequestWithBody<{
+authRoute.post("/password-recovery", ipAttemptsValidator, passwordRecoverEmailValidator(), async (req: RequestWithBody<{
     email: string
 }>, res: Response) => {
     const confirmResult = await AuthService.sendRecoveryEmail(req.body.email);

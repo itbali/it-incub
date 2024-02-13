@@ -2,7 +2,7 @@ import {body} from "express-validator";
 import {UserService} from "../services/user-service";
 import {inputModelValidation} from "../middlewares/input-model-validation/input-model-validation";
 
-export const emailValidator = body('email')
+const emailValidator = body('email')
     .trim()
     .isEmail()
     .custom(async (email: string) => {

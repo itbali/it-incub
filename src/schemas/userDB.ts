@@ -21,6 +21,7 @@ const usersSchema = new mongoose.Schema({
     registerCode: { type: String, default: null },
     isConfirmed: { type: Boolean, required: true },
     refreshTokens: { type: [String], default: null },
+    recoveryCode: { type: String, default: null }
 })
 
 export const UserModel = mongoose.model<UserDBType>('User', usersSchema);

@@ -78,6 +78,7 @@ export class UserService {
     static async resetPassword(recoveryCode: string, newPassword: string): Promise<boolean> {
         const {data: email} = JwtService.decodeJwtToken(recoveryCode) as JwtPayload
         const user = await UserService.getUserByEmailOrLogin(email)
+        console.log({user, recoveryCode, newPassword})
         if (!user) {
             return false
         }

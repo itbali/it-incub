@@ -1,6 +1,5 @@
 import {body} from "express-validator";
 import {inputModelValidation} from "../middlewares/input-model-validation/input-model-validation";
-import jwt from "jsonwebtoken";
 
 const passwordValidator = body('newPassword')
     .trim()
@@ -11,9 +10,6 @@ const passwordValidator = body('newPassword')
 const recoveryCodeValidator = body('recoveryCode')
     .isString()
     .isJWT()
-    .custom((recoveryCode: string) => {
-        jwt.verify(recoveryCode, process.env.SECRET_KEY as string);
-    })
     .withMessage("Incorrect recoveryCode");
 
 export const newPasswordValidation = () => {

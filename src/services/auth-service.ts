@@ -101,7 +101,7 @@ export class AuthService {
 
     static async sendRecoveryEmail(email: string): Promise<boolean> {
         const recoveryCode = JwtService.generateJwtToken(email)
-        await UserRepository.setUserrecoveryCode(email, recoveryCode)
+        await UserRepository.setUserRecoveryCode(email, recoveryCode)
         await EmailService.resetPasswordEmail(email, recoveryCode)
         return true
     }
