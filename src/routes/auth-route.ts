@@ -14,48 +14,57 @@ import {newPasswordValidation} from "../validators/new-password-validator";
 
 export const authRoute = Router();
 
-authRoute.post("/registration", ipAttemptsValidator, registerValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response)=>{
+authRoute.post("/registration", ipAttemptsValidator, registerValidation(), async (req: RequestWithBody<UserCreateModel>, res: Response) => {
     const createdUser = await AuthService.register({
         email: req.body.email,
         login: req.body.login,
         password: req.body.password
     });
-    if(!createdUser){
+    if (!createdUser) {
         res.sendStatus(400);
         return;
     }
     res.status(204).send(createdUser);
 })
 
-authRoute.post("/registration-confirmation", ipAttemptsValidator, emailConfirmationValidator(), async (req: RequestWithBody<{code:string}>,res: Response)=>{
+authRoute.post("/registration-confirmation", ipAttemptsValidator, emailConfirmationValidator(), async (req: RequestWithBody<{
+    code: string
+}>, res: Response) => {
     const confirmResult = await AuthService.confirmEmail(req.body.code);
-    if(!confirmResult){
+    if (!confirmResult) {
         res.sendStatus(400);
         return;
     }
     res.sendStatus(204);
 })
 
-authRoute.post("/registration-email-resending", ipAttemptsValidator, emailResendingValidator(), async (req: RequestWithBody<{email:string}>,res: Response)=>{
+authRoute.post("/registration-email-resending", ipAttemptsValidator, emailResendingValidator(), async (req: RequestWithBody<{
+    email: string
+}>, res: Response) => {
     const confirmResult = await AuthService.resendConfirmEmail(req.body.email);
-    if(!confirmResult){
+    if (!confirmResult) {
         res.sendStatus(400);
         return;
     }
     res.sendStatus(204);
 });
 
-authRoute.post("/login", ipAttemptsValidator,  loginValidation(), async (req: RequestWithBody<LoginModel>, res: Response) => {
+authRoute.post("/login", ipAttemptsValidator, loginValidation(), async (req: RequestWithBody<LoginModel>, res: Response) => {
     const userAgentTitle = req.headers["user-agent"]
         ? req.headers["user-agent"]
         : "unknown";
-    const loginResult = await AuthService.login({loginOrEmail: req.body.loginOrEmail, password: req.body.password, userAgentTitle, ip: req.ip});
+    const loginResult = await AuthService.login({
+        loginOrEmail: req.body.loginOrEmail,
+        password: req.body.password,
+        userAgentTitle,
+        ip: req.ip
+    });
     if (!loginResult) {
         res.sendStatus(401);
         return;
     }
     res.cookie("refreshToken", loginResult.refreshToken, {httpOnly: true, secure: true})
-    res.status(200).send({accessToken:loginResult.accessToken});
+    res.status(200).send({accessToken: loginResult.accessToken});
 })
 
 authRoute.post("/refresh-token", refreshTokenValidator, async (req: Request, res: Response) => {
@@ -65,8 +74,8 @@ authRoute.post("/refresh-token", refreshTokenValidator, async (req: Request, res
         res.sendStatus(401);
         return;
     }
-    res.cookie("refreshToken", refreshResult.refreshToken, {httpOnly: true, sameSite: "strict", secure:true})
-    res.status(200).send({accessToken:refreshResult.accessToken});
+    res.cookie("refreshToken", refreshResult.refreshToken, {httpOnly: true, sameSite: "strict", secure: true})
+    res.status(200).send({accessToken: refreshResult.accessToken});
 })
 
 authRoute.get("/me", async (req: Request, res: Response<meOutput | number>) => {
@@ -91,29 +100,34 @@ authRoute.post("/logout", refreshTokenValidator, async (req: Request, res: Respo
         return;
     }
     const logoutResult = await AuthService.logout(refreshToken);
-    if(!logoutResult){
+    if (!logoutResult) {
         res.sendStatus(401)
         return
     }
     res.sendStatus(204);
-
-    authRoute.post("/password-recovery", ipAttemptsValidator, emailResendingValidator(), async (req: RequestWithBody<{email:string}>,res: Response)=>{
-        const confirmResult = await AuthService.sendRecoveryEmail(req.body.email);
-        if(!confirmResult){
-            res.sendStatus(400);
-            return;
-        }
-        res.sendStatus(204);
-    });
-
-    authRoute.post("/new-password", ipAttemptsValidator, newPasswordValidation(), async (req: RequestWithBody<{newPassword:string, recoveryCode:string}>,res: Response)=>{
-        const password = req.body.newPassword;
-        const code = req.body.recoveryCode;
-        const resetPasswordResult = await UserService.resetPassword(code, password);
-        if(!resetPasswordResult){
-            res.sendStatus(400);
-            return;
-        }
-        res.sendStatus(204);
-    });
 })
+authRoute.post("/password-recovery", ipAttemptsValidator, emailResendingValidator(), async (req: RequestWithBody<{
+    email: string
+}>, res: Response) => {
+    const confirmResult = await AuthService.sendRecoveryEmail(req.body.email);
+    if (!confirmResult) {
+        res.sendStatus(400);
+        return;
+    }
+    res.sendStatus(204);
+});
+
+authRoute.post("/new-password", ipAttemptsValidator, newPasswordValidation(), async (req: RequestWithBody<{
+    newPassword: string,
+    recoveryCode: string
+}>, res: Response) => {
+    const password = req.body.newPassword;
+    const code = req.body.recoveryCode;
+    const resetPasswordResult = await UserService.resetPassword(code, password);
+    if (!resetPasswordResult) {
+        res.sendStatus(400);
+        return;
+    }
+    res.sendStatus(204);
+});
+
