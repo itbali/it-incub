@@ -5,9 +5,9 @@ import {AuthUtil} from "../utils/authUtil";
 import {JwtPayload} from "jsonwebtoken";
 import {UserVM} from "../models/users/output";
 import {BcriptSrvice} from "../application/bcript-srvice";
-import {UserDBType} from "../models/db/db";
 import {UserRepository} from "../repositories/user-repository";
 import {EmailService} from "./email-service";
+import {UserDBType} from "../schemas/userDB";
 
 export class AuthService {
     static async register({password, login, email}: UserCreateModel): Promise<UserVM | null> {
@@ -96,6 +96,13 @@ export class AuthService {
         }
         await UserRepository.updateUser(id, {refreshToken: null})
         await UserRepository.removeRefreshToken(refreshToken)
+        return true
+    }
+
+    static async sendRecoveryEmail(email: string): Promise<boolean> {
+        const recoveryCode = JwtService.generateJwtToken(email)
+        await UserRepository.setUserrecoveryCode(email, recoveryCode)
+        await EmailService.resetPasswordEmail(email, recoveryCode)
         return true
     }
 }

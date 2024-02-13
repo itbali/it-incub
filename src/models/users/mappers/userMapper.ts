@@ -1,6 +1,6 @@
 import {WithId} from "mongodb";
-import {UserDBType} from "../../db/db";
 import {UserVM} from "../output";
+import {UserDBType} from "../../../schemas/userDB";
 
 export const userMapper = (user: WithId<UserDBType>): UserVM=>{
     return {

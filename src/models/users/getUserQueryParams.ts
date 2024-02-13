@@ -1,8 +1,6 @@
-import {Sort, SortDirection} from "mongodb";
-
 export type getUserQueryParams = {
-    sortBy?: Sort,
-    sortDirection?: SortDirection,
+    sortBy?: string,
+    sortDirection?: 1 | -1 | "asc" | "desc" | "ascending" | "descending",
     pageNumber?: number,
     pageSize?: number,
     searchLoginTerm?: string,

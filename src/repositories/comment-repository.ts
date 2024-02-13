@@ -1,25 +1,15 @@
-import {CommentDBType} from "../models/db/db";
-import {commentsCollection} from "../db/db";
 import {CommentsGetResponse, CommentVM} from "../models/comments/output";
 import {commentMapper} from "../models/comments/mappers/commentMapper";
 import {CommentsQueryParams} from "../models/comments/query-params";
-import {ObjectId} from "mongodb";
+import {CommentDBType, CommentsModel} from "../schemas/commentDB";
 
 export class commentRepository {
     static async create(commentToCreate: CommentDBType): Promise<CommentVM | null> {
-        const createdComment = await commentsCollection.insertOne(commentToCreate);
+        const createdComment = await CommentsModel.create(commentToCreate);
         if (!createdComment) {
             return null;
         }
-        return {
-            createdAt: commentToCreate.createdAt,
-            content: commentToCreate.content,
-            id: createdComment.insertedId.toString(),
-            commentatorInfo: {
-                userId: commentToCreate.commentatorInfo.userId,
-                userLogin: commentToCreate.commentatorInfo.userLogin,
-            }
-        };
+        return createdComment.toObject();
     }
 
     static async getCommentsByPostId({
@@ -29,13 +19,13 @@ export class commentRepository {
                                          sortBy,
                                          sortDirection
                                      }: Required<CommentsQueryParams>): Promise<CommentsGetResponse> {
-        const comments = await commentsCollection
+        const comments = await CommentsModel
             .find({postId: postId})
-            .sort(sortBy, sortDirection)
+            .sort({[sortBy]: sortDirection})
             .skip((pageNumber - 1) * pageSize)
             .limit(pageSize)
-            .toArray();
-        const commentsCount = await commentsCollection.countDocuments({postId: postId});
+            .lean();
+        const commentsCount = await CommentsModel.countDocuments({postId: postId});
         return {
             items: comments.map(commentMapper),
             totalCount: commentsCount,
@@ -46,20 +36,20 @@ export class commentRepository {
     }
 
     static async getCommentById(id: string): Promise<CommentVM | null> {
-        const comment = await commentsCollection.findOne({_id: new ObjectId(id)});
+        const comment = await CommentsModel.findOne({_id: id}).lean();
         return comment ? commentMapper(comment) : null;
     }
 
     static async updateComment(comment: CommentVM): Promise<CommentVM | null> {
-        const updatedComment = await commentsCollection.findOneAndUpdate(
-            {_id: new ObjectId(comment.id)},
+        const updatedComment = await CommentsModel.findOneAndUpdate(
+            {_id: comment.id},
             {$set: {...comment}}
         );
         return updatedComment ? comment : null;
     }
 
     static async deleteComment(id: string): Promise<CommentVM | null> {
-        const deletedComment = await commentsCollection.findOneAndDelete({_id: new ObjectId(id)});
+        const deletedComment = await CommentsModel.findOneAndDelete({_id: id});
         return deletedComment ? commentMapper(deletedComment) : null;
     }
 }

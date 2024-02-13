@@ -1,6 +1,6 @@
 import {WithId} from "mongodb";
-import {CommentDBType} from "../../db/db";
 import {CommentVM} from "../output";
+import {CommentDBType} from "../../../schemas/commentDB";
 
 export const commentMapper = (comment: WithId<CommentDBType>): CommentVM => ({
     id: comment._id.toString(),

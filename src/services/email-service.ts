@@ -11,4 +11,15 @@ export class EmailService {
                     </p>`
         })
     }
+
+    static resetPasswordEmail(userEmail:string, resetCode: string) {
+        return EmailAdapter.sendEmail({
+            to: userEmail,
+            subject: 'Reset your password',
+            html: `<h1>Reset your password</h1>
+                        <p>To reset your password please follow the link below:
+                        <a href='https://it-incub.vercel.app/auth/password-reset?code=${resetCode}'>reset password</a>
+                    </p>`
+        })
+    }
 }

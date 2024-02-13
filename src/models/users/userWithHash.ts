@@ -5,4 +5,5 @@ export type UserWithHash = {
     passwordHash: string,
     passwordSalt: string,
     isConfirmed: boolean,
+    recoveryCode?: string | null,
 }

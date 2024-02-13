@@ -1,5 +1,4 @@
 import {GetUsersResponse, meOutput, UserVM} from "../models/users/output";
-import {UserDBType} from "../models/db/db";
 import {UserRepository} from "../repositories/user-repository";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
 import {UserWithHash} from "../models/users/userWithHash";
@@ -7,6 +6,7 @@ import {BcriptSrvice} from "../application/bcript-srvice";
 import {UserCreateModel} from "../models/auth/input";
 import {JwtService} from "../application/jwt-service";
 import {JwtPayload} from "jsonwebtoken";
+import {UserDBType} from "../schemas/userDB";
 
 export class UserService {
 
@@ -73,5 +73,21 @@ export class UserService {
             sortDirection: sort.sortDirection || "desc",
             searchLoginTerm: sort.searchLoginTerm || ""
         })
+    }
+
+    static async resetPassword(recoveryCode: string, newPassword: string): Promise<boolean> {
+        const {data: email} = JwtService.decodeJwtToken(recoveryCode) as JwtPayload
+        const user = await UserService.getUserByEmailOrLogin(email)
+        if (!user) {
+            return false
+        }
+        const isRecoveryCodeValid = user.recoveryCode === recoveryCode
+        if (!isRecoveryCodeValid) {
+            return false
+        }
+        const passwordSalt = user.passwordSalt
+        const passwordHash = await BcriptSrvice.generateHash(passwordSalt, newPassword)
+        await UserRepository.updateUser(user.id, {passwordHash, recoveryCode: null})
+        return true
     }
 }

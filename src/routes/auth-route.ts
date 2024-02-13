@@ -10,6 +10,7 @@ import {UserService} from "../services/user-service";
 import {meOutput} from "../models/users/output";
 import {refreshTokenValidator} from "../validators/refresh-token-validator";
 import {ipAttemptsValidator} from "../validators/ip-attempts-validator";
+import {newPasswordValidation} from "../validators/new-password-validator";
 
 export const authRoute = Router();
 
@@ -95,4 +96,24 @@ authRoute.post("/logout", refreshTokenValidator, async (req: Request, res: Respo
         return
     }
     res.sendStatus(204);
+
+    authRoute.post("/password-recovery", ipAttemptsValidator, emailResendingValidator(), async (req: RequestWithBody<{email:string}>,res: Response)=>{
+        const confirmResult = await AuthService.sendRecoveryEmail(req.body.email);
+        if(!confirmResult){
+            res.sendStatus(400);
+            return;
+        }
+        res.sendStatus(204);
+    });
+
+    authRoute.post("/new-password", ipAttemptsValidator, newPasswordValidation(), async (req: RequestWithBody<{newPassword:string, recoveryCode:string}>,res: Response)=>{
+        const password = req.body.newPassword;
+        const code = req.body.recoveryCode;
+        const resetPasswordResult = await UserService.resetPassword(code, password);
+        if(!resetPasswordResult){
+            res.sendStatus(400);
+            return;
+        }
+        res.sendStatus(204);
+    });
 })
