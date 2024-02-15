@@ -13,6 +13,7 @@ export const ipAttemptsValidator = async (req: Request, res: Response, next: Nex
     const isBlocked = filteredIpAttempts.length >= 5;
 
     if (isBlocked) {
+        console.log({isBlocked, ipAttempts, filteredIpAttempts})
         res.sendStatus(429);
         return;
     }
