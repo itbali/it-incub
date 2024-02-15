@@ -146,7 +146,6 @@ export class UserRepository {
     }
     
     static async setUserRecoveryCode(email: string, recoveryCode: string): Promise<UserDBType | null> {
-        console.log({email, recoveryCode})
         return UserModel.findOneAndUpdate({email}, {$set: {recoveryCode: recoveryCode}})
     }
 }
