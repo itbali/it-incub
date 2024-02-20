@@ -3,7 +3,7 @@ import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {postValidation} from "../validators/post-validator";
 import {jwtMiddleware} from "../middlewares/auth/jwt-middleware";
 import {commentValidation} from "../validators/comment-validator";
-import {postController} from "../controllers/post-composition";
+import {postController} from "../composition-roots/post-composition";
 
 export const postRoute = express.Router();
 
