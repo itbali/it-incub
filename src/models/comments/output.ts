@@ -1,3 +1,5 @@
+import {LikeStatus} from "../../schemas/commentDB";
+
 export type CommentVM = {
     id: string,
     content: string,
@@ -6,6 +8,11 @@ export type CommentVM = {
         userId: string,
         userLogin: string,
     },
+    likesInfo: {
+        likesCount: number,
+        dislikesCount: number,
+        myStatus: LikeStatus,
+    }
 }
 
 export type CommentsGetResponse = {

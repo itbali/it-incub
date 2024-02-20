@@ -1,7 +1,7 @@
 import {EmailAdapter} from "../adapters/email-adapter";
 
 export class EmailService {
-    static confirmEmail(userEmail:string, confirmCode: string) {
+    confirmEmail(userEmail:string, confirmCode: string) {
         return EmailAdapter.sendEmail({
             to: userEmail,
             subject: 'Confirm your email',
@@ -12,7 +12,7 @@ export class EmailService {
         })
     }
 
-    static resetPasswordEmail(userEmail:string, resetCode: string) {
+    resetPasswordEmail(userEmail:string, resetCode: string) {
         return EmailAdapter.sendEmail({
             to: userEmail,
             subject: 'Reset your password',

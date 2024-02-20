@@ -1,17 +1,17 @@
-import {JwtService} from "../application/jwt-service";
 import {JwtPayload} from "jsonwebtoken";
-import {UserService} from "../services/user-service";
+import {jwtService} from "../composition-roots/security-composition";
+import {userService} from "../composition-roots/user-composition";
 
 export const checkEmailJwtCode = async (confirmCode: string) => {
-    const valid = JwtService.verifyJwtToken(confirmCode)
+    const valid = jwtService.verifyJwtToken(confirmCode)
     if (!valid) {
         throw Error("Incorrect code");
     }
-    const {data: email} = JwtService.decodeJwtToken(confirmCode) as JwtPayload
+    const {data: email} = jwtService.decodeJwtToken(confirmCode) as JwtPayload
     if (!email) {
         throw Error("Incorrect code");
     }
-    const user = await UserService.getUserByEmailOrLogin(email)
+    const user = await userService.getUserByEmailOrLogin(email)
     if (!user || user.isConfirmed) {
         throw Error("Incorrect code");
     }

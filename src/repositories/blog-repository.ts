@@ -7,7 +7,7 @@ import {BlogDBType, BlogsModel} from "../schemas/blogDB";
 
 export class BlogRepository {
 
-    static async getAllBlogs({sortBy, sortDirection, pageSize, pageNumber, searchNameTerm}: Required<BlogQueryParams>): Promise<BlogsGetResponse>{
+    async getAllBlogs({sortBy, sortDirection, pageSize, pageNumber, searchNameTerm}: Required<BlogQueryParams>): Promise<BlogsGetResponse>{
         const blogs = await BlogsModel
             .find({name: {$regex: searchNameTerm, $options: "i"}})
             .sort({[sortBy]: sortDirection})
@@ -27,17 +27,17 @@ export class BlogRepository {
         };
     }
 
-    static async getBlogById(id: string): Promise<BlogModel | null>{
+    async getBlogById(id: string): Promise<BlogModel | null>{
         const blog = await BlogsModel.findOne({_id: id}).lean();
         return blog ? blogMapper(blog) : null;
     }
 
-    static async createBlog(blog: BlogDBType): Promise<BlogModel>{
+    async createBlog(blog: BlogDBType): Promise<BlogModel>{
         const createdBlog = await BlogsModel.create({...blog});
         return {...blog, id: createdBlog.id};
     }
 
-    static async updateBlog({id, name, websiteUrl, description}: BlogCreateModel &{id:string}): Promise<BlogModel | null>{
+    async updateBlog({id, name, websiteUrl, description}: BlogCreateModel &{id:string}): Promise<BlogModel | null>{
         const blog = await BlogsModel.findOneAndUpdate(
             {_id: id},
             {$set:{description,name,websiteUrl}},
@@ -45,7 +45,7 @@ export class BlogRepository {
         return blog ? blogMapper(blog) : null;
     }
 
-    static async deleteBlog(id: string): Promise<BlogModel | null>{
+    async deleteBlog(id: string): Promise<BlogModel | null>{
         const blog = await BlogsModel.findOneAndDelete({_id: id});
         return blog ? blogMapper(blog) : null;
     }

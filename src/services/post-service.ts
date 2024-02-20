@@ -3,15 +3,17 @@ import {PostCreateModel} from "../models/posts/input";
 import {PostQueryParams} from "../models/posts/query-params";
 import {PostRepository} from "../repositories/post-repository";
 import {BlogService} from "./blog-service";
-import {commentRepository} from "../repositories/comment-repository";
+import {CommentRepository} from "../repositories/comment-repository";
 import {CommentVM} from "../models/comments/output";
 import {UserRepository} from "../repositories/user-repository";
 
 export class PostService {
+    constructor(protected postRepository: PostRepository, protected blogService: BlogService, protected commentRepository: CommentRepository, protected userRepository: UserRepository) {
+    }
 
-    static async getAllPosts(sortData: PostQueryParams): Promise<PostsGetResponse> {
+    async getAllPosts(sortData: PostQueryParams): Promise<PostsGetResponse> {
         const {sortBy = "createdAt", sortDirection = "desc", pageSize = 10, pageNumber = 1} = sortData;
-        return await PostRepository.getAllPosts({
+        return await this.postRepository.getAllPosts({
             sortBy,
             sortDirection,
             pageSize: Number(pageSize),
@@ -19,7 +21,7 @@ export class PostService {
         })
     }
 
-    static async getAllPostsByBlogId(sortData: PostQueryParams & { blogId: string }): Promise<PostsGetResponse> {
+    async getAllPostsByBlogId(sortData: PostQueryParams & { blogId: string }): Promise<PostsGetResponse> {
         const filledSortData = {
             sortBy: sortData.sortBy ?? "createdAt",
             sortDirection: sortData.sortDirection ?? "desc",
@@ -27,39 +29,37 @@ export class PostService {
             pageSize: Number(sortData.pageSize) || 10,
             blogId: sortData.blogId
         };
-        return await PostRepository.getAllPostsByBlogId(filledSortData);
+        return await this.postRepository.getAllPostsByBlogId(filledSortData);
     }
 
-    static async getPostById(id: string): Promise<PostVM | null> {
-        return await PostRepository.getPostById(id);
+    async getPostById(id: string): Promise<PostVM | null> {
+        return await this.postRepository.getPostById(id);
     }
 
-    static async createPost({title, shortDescription, content, blogId}: PostCreateModel): Promise<PostVM> {
-        const blog = await BlogService.getBlogById(blogId)
+    async createPost({title, shortDescription, content, blogId}: PostCreateModel): Promise<PostVM> {
+        const blog = await this.blogService.getBlogById(blogId)
         const post = {title, shortDescription, content, blogId, blogName: blog!.name, createdAt: new Date().toISOString()}
-        return await PostRepository.createPost(post)
+        return await this.postRepository.createPost(post)
     }
 
-    static async updatePost(post: PostCreateModel & {
-        id: string
-    }): Promise<PostVM | null> {
-        return await PostRepository.updatePost(post);
+    async updatePost(post: PostCreateModel & { id: string }): Promise<PostVM | null> {
+        return await this.postRepository.updatePost(post);
     }
 
-    static async deletePost(id: string): Promise<PostVM | null> {
-        return await PostRepository.deletePost(id);
+    async deletePost(id: string): Promise<PostVM | null> {
+        return await this.postRepository.deletePost(id);
     }
 
-    static async addCommentToPost(postId:string, content: string, userId: string): Promise<CommentVM | null>{
-        const post = await PostRepository.getPostById(postId)
+    async addCommentToPost(postId:string, content: string, userId: string): Promise<CommentVM | null>{
+        const post = await this.postRepository.getPostById(postId)
         if(!post){
             return null
         }
-        const user = await UserRepository.getUserById(userId)
+        const user = await this.userRepository.getUserById(userId)
         if(!user){
             return null
         }
-        return commentRepository.create({
+        return this.commentRepository.create({
             postId,
             content,
             postTitle: post.title,
@@ -67,6 +67,11 @@ export class PostService {
             commentatorInfo: {
                 userId: user.id,
                 userLogin: user.login,
+            },
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                usersLiked: [],
             }
         })
     }

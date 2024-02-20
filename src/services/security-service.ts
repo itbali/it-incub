@@ -3,31 +3,35 @@ import {DeviceInfo} from "../models/security/devicesInfo";
 import {JwtService} from "../application/jwt-service";
 
 export class SecurityService {
-    static async getUserDevices(userId: string): Promise<DeviceInfo[] | null> {
-        return UserRepository.getUserDevicesInfo(userId)
+
+    constructor(protected userRepository: UserRepository, protected jwtService: JwtService) {
     }
 
-    static async removeDevicesExceptCurrent(userId: string, deviceId: string) {
-        return UserRepository.removeRefreshTokensExceptCurrent(userId, deviceId)
+    async getUserDevices(userId: string): Promise<DeviceInfo[] | null> {
+        return this.userRepository.getUserDevicesInfo(userId)
     }
 
-    static async removeDevice(deviceId:string, refreshToken: string) {
-        const {data: userId} = JwtService.decodeJwtToken(refreshToken)
-        const userRefreshTokens = await UserRepository.getUserRefreshTokes(userId)
+    async removeDevicesExceptCurrent(userId: string, deviceId: string) {
+        return this.userRepository.removeRefreshTokensExceptCurrent(userId, deviceId)
+    }
+
+    async removeDevice(deviceId:string, refreshToken: string) {
+        const {data: userId} = this.jwtService.decodeJwtToken(refreshToken)
+        const userRefreshTokens = await this.userRepository.getUserRefreshTokes(userId)
         if (!userRefreshTokens) {
             return null
         }
         const refreshTokenForRemove = userRefreshTokens.find(rt => {
-            const {deviceId: rtDeviceId} = JwtService.decodeJwtToken(rt)
+            const {deviceId: rtDeviceId} = this.jwtService.decodeJwtToken(rt)
             return rtDeviceId === deviceId
         })
         if (!refreshTokenForRemove) {
             return null
         }
-        return UserRepository.removeRefreshToken(refreshTokenForRemove)
+        return this.userRepository.removeRefreshToken(refreshTokenForRemove)
     }
 
-    static async getAllDevices() {
-        return UserRepository.getAllDevices()
+    async getAllDevices() {
+        return this.userRepository.getAllDevices()
     }
 }

@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import {UserService} from "../../services/user-service";
+import {userService} from "../../composition-roots/user-composition";
 
 export const jwtMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -9,7 +9,7 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
         return;
     }
 
-    const user = await UserService.getUserByIdFromToken(token)
+    const user = await userService.getUserByIdFromToken(token)
     if (!user) {
         res.sendStatus(401)
         return;

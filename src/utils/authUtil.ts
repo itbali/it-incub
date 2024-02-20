@@ -1,11 +1,11 @@
-import {BcriptSrvice} from "../application/bcript-srvice";
+import {BcriptService} from "../application/bcript-service";
 import {LoginModel} from "../models/auth/input";
 import {UserService} from "../services/user-service";
 import {JwtService} from "../application/jwt-service";
 
 export class AuthUtil {
     static async validatePassword(password: string, salt: string, hash: string) {
-        return BcriptSrvice.validatePasswordWithSalt(password, salt, hash)
+        return BcriptService.validatePasswordWithSalt(password, salt, hash)
     }
 
     //TODO CHECKUP

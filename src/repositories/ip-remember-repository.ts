@@ -1,7 +1,7 @@
 import {ApiRequestsModel} from "../schemas/apiRequestDb";
 
 export class IpRememberRepository {
-    static async saveRequestIp(ip: string, URL: string): Promise<void> {
+    async saveRequestIp(ip: string, URL: string): Promise<void> {
         const requestInstance = new ApiRequestsModel({
             IP: ip,
             URL: URL,

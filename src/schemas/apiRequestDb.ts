@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
-export type ApiRequestDbType = { IP: string, URL: string, date: Date }
+export class ApiRequestDbType  {
+    constructor( public IP: string, public URL: string, public date: Date ) { }
+    }
 
 const apiRequestsSchema = new mongoose.Schema({
     IP: { type: String, required: true },

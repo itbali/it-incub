@@ -4,31 +4,42 @@ import {UserService} from "./user-service";
 import {AuthUtil} from "../utils/authUtil";
 import {JwtPayload} from "jsonwebtoken";
 import {UserVM} from "../models/users/output";
-import {BcriptSrvice} from "../application/bcript-srvice";
+import {BcriptService} from "../application/bcript-service";
 import {UserRepository} from "../repositories/user-repository";
 import {EmailService} from "./email-service";
 import {UserDBType} from "../schemas/userDB";
 
 export class AuthService {
-    static async register({password, login, email}: UserCreateModel): Promise<UserVM | null> {
-        const passwordSalt = await BcriptSrvice.generateSalt()
-        const passwordHash = await BcriptSrvice.generateHash(passwordSalt, password)
-        const registerCode = JwtService.generateJwtToken(email)
+    
+    constructor(
+        protected jwtService: JwtService,
+        protected userService: UserService,
+        protected scriptService: BcriptService,
+        protected userRepository: UserRepository,
+        protected emailService: EmailService
+    ) {
+    }
+    async register({password, login, email}: UserCreateModel): Promise<UserVM | null> {
+        const passwordSalt = await this.scriptService.generateSalt()
+        const passwordHash = await this.scriptService.generateHash(passwordSalt, password)
+        const registerCode = this.jwtService.generateJwtToken(email)
 
-        const user: UserDBType = {
-            createdAt: new Date().toISOString(),
+        const user = new UserDBType(
             login,
             email,
+            new Date().toISOString(),
             passwordHash,
             passwordSalt,
             registerCode,
-            isConfirmed: false,
-        }
-        const createdUserId = await UserRepository.createUser(user);
+            false,
+            null,
+            null
+    )
+        const createdUserId = await this.userRepository.createUser(user);
         if (!createdUserId) {
             return null
         }
-        await EmailService.confirmEmail(email, registerCode)
+        await this.emailService.confirmEmail(email, registerCode)
         return {
             createdAt: user.createdAt,
             login: user.login,
@@ -37,72 +48,72 @@ export class AuthService {
         }
     }
 
-    static async confirmEmail(confirmCode: string): Promise<boolean> {
-        const {data: email} = JwtService.decodeJwtToken(confirmCode) as JwtPayload
-        const user = await UserService.getUserByEmailOrLogin(email)
-        await UserRepository.updateUser(user!.id, {
+    async confirmEmail(confirmCode: string): Promise<boolean> {
+        const {data: email} = this.jwtService.decodeJwtToken(confirmCode) as JwtPayload
+        const user = await this.userService.getUserByEmailOrLogin(email)
+        await this.userRepository.updateUser(user!.id, {
             isConfirmed: true,
             registerCode: null
         })
         return true
     }
 
-    static async resendConfirmEmail(email: string): Promise<boolean> {
-        const user = await UserService.getUserByEmailOrLogin(email)
+    async resendConfirmEmail(email: string): Promise<boolean> {
+        const user = await this.userService.getUserByEmailOrLogin(email)
         if (!user || user.isConfirmed) {
             return false
         }
-        const registerCode = JwtService.generateJwtToken(email)
-        await EmailService.confirmEmail(email, registerCode)
+        const registerCode = this.jwtService.generateJwtToken(email)
+        await this.emailService.confirmEmail(email, registerCode)
         return true
     }
 
-    static async login(credentials: LoginModel): Promise<{ accessToken: string, refreshToken: string } | null> {
-        const user = await UserService.getUserByEmailOrLogin(credentials.loginOrEmail)
+    async login(credentials: LoginModel): Promise<{ accessToken: string, refreshToken: string } | null> {
+        const user = await this.userService.getUserByEmailOrLogin(credentials.loginOrEmail)
         if (!user) {
             return null
         }
         if (await AuthUtil.validatePassword(credentials.password, user.passwordSalt, user.passwordHash)) {
-            const accessToken = JwtService.generateJwtToken(user.id, 100)
-            const refreshToken = JwtService.generateJwtToken(user.id, 2000, {deviceId: Date.now().toString(), title:  credentials.userAgentTitle, ip: credentials.ip})
-            await UserRepository.updateUser(user.id, {refreshToken})
+            const accessToken = this.jwtService.generateJwtToken(user.id, 100)
+            const refreshToken = this.jwtService.generateJwtToken(user.id, 2000, {deviceId: Date.now().toString(), title:  credentials.userAgentTitle, ip: credentials.ip})
+            await this.userRepository.updateUser(user.id, {refreshToken})
             return {accessToken, refreshToken}
         }
         return null
     }
 
-    static async refreshToken(refreshToken: string): Promise<{ accessToken: string, refreshToken: string } | null> {
-        const {data: id, deviceId, title, ip} = JwtService.decodeJwtToken(refreshToken) as JwtPayload
-        const isRefreshTokenValid = await UserRepository.validateUserRefreshToken(id, refreshToken)
+    async refreshToken(refreshToken: string): Promise<{ accessToken: string, refreshToken: string } | null> {
+        const {data: id, deviceId, title, ip} = this.jwtService.decodeJwtToken(refreshToken) as JwtPayload
+        const isRefreshTokenValid = await this.userRepository.validateUserRefreshToken(id, refreshToken)
         if (!isRefreshTokenValid) {
             return null
         }
-        const newAccessToken = JwtService.generateJwtToken(id, 100)
-        await UserRepository.removeRefreshToken(refreshToken)
-        const newRefreshToken = JwtService.generateJwtToken(id, 2000, {deviceId, title, ip})
-        await UserRepository.updateUser(id, {refreshToken:newRefreshToken})
+        const newAccessToken = this.jwtService.generateJwtToken(id, 100)
+        await this.userRepository.removeRefreshToken(refreshToken)
+        const newRefreshToken = this.jwtService.generateJwtToken(id, 2000, {deviceId, title, ip})
+        await this.userRepository.updateUser(id, {refreshToken:newRefreshToken})
         return {accessToken: newAccessToken, refreshToken: newRefreshToken}
     }
 
-    static async logout(refreshToken: string): Promise<boolean> {
-        const isTokenValid = JwtService.verifyJwtToken(refreshToken)
+    async logout(refreshToken: string): Promise<boolean> {
+        const isTokenValid = this.jwtService.verifyJwtToken(refreshToken)
         if (!isTokenValid) {
             return false
         }
-        const {data: id} = JwtService.decodeJwtToken(refreshToken) as JwtPayload
-        const isRefreshTokenValid = await UserRepository.validateUserRefreshToken(id, refreshToken)
+        const {data: id} = this.jwtService.decodeJwtToken(refreshToken) as JwtPayload
+        const isRefreshTokenValid = await this.userRepository.validateUserRefreshToken(id, refreshToken)
         if (!isRefreshTokenValid) {
             return false
         }
-        await UserRepository.updateUser(id, {refreshToken: null})
-        await UserRepository.removeRefreshToken(refreshToken)
+        await this.userRepository.updateUser(id, {refreshToken: null})
+        await this.userRepository.removeRefreshToken(refreshToken)
         return true
     }
 
-    static async sendRecoveryEmail(email: string): Promise<boolean> {
-        const recoveryCode = JwtService.generateJwtToken(email)
-        await UserRepository.setUserRecoveryCode(email, recoveryCode)
-        await EmailService.resetPasswordEmail(email, recoveryCode)
+    async sendRecoveryEmail(email: string): Promise<boolean> {
+        const recoveryCode = this.jwtService.generateJwtToken(email)
+        await this.userRepository.setUserRecoveryCode(email, recoveryCode)
+        await this.emailService.resetPasswordEmail(email, recoveryCode)
         return true
     }
 }

@@ -7,7 +7,7 @@ import {PostDBType, PostsModel} from "../schemas/postDB";
 
 export class PostRepository {
 
-    static async getAllPosts(sortData: Required<PostQueryParams>): Promise<PostsGetResponse> {
+    async getAllPosts(sortData: Required<PostQueryParams>): Promise<PostsGetResponse> {
         const {sortBy, sortDirection, pageSize, pageNumber} = sortData;
         const postsCount = await PostsModel.countDocuments();
         const posts = await PostsModel
@@ -26,7 +26,7 @@ export class PostRepository {
         }
     }
 
-    static async getAllPostsByBlogId({sortBy, sortDirection, pageSize, pageNumber, blogId}: Required<PostQueryParams> & {blogId: string}): Promise<PostsGetResponse> {
+    async getAllPostsByBlogId({sortBy, sortDirection, pageSize, pageNumber, blogId}: Required<PostQueryParams> & {blogId: string}): Promise<PostsGetResponse> {
         const postsCount = await PostsModel.countDocuments({blogId});
         const posts = await PostsModel
             .find({blogId})
@@ -44,18 +44,18 @@ export class PostRepository {
         }
     }
 
-    static async getPostById(id: string): Promise<PostVM | null> {
+    async getPostById(id: string): Promise<PostVM | null> {
         const post = await PostsModel.findOne({_id: id}).lean();
         return post ? postMapper(post) : null;
     }
 
-    static async createPost(post: PostDBType): Promise<PostVM> {
+    async createPost(post: PostDBType) {
         const postInstance = new PostsModel(post);
         const createdPost = await postInstance.save();
-        return createdPost.toObject()
+        return postMapper(createdPost)
     }
 
-    static async updatePost({id, title, shortDescription, content, blogId}: PostCreateModel & {
+    async updatePost({id, title, shortDescription, content, blogId}: PostCreateModel & {
         id: string
     }): Promise<PostVM | null> {
         const updatedPost = await PostsModel.findOneAndUpdate({_id: id}, {
@@ -69,7 +69,7 @@ export class PostRepository {
         return updatedPost ? postMapper(updatedPost) : null;
     }
 
-    static async deletePost(id: string): Promise<PostVM | null> {
+    async deletePost(id: string): Promise<PostVM | null> {
         const deletedPost = await PostsModel.findOneAndDelete({_id: id});
         return deletedPost ? postMapper(deletedPost) : null;
     }
