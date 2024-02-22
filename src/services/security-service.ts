@@ -1,10 +1,14 @@
 import {UserRepository} from "../repositories/user-repository";
 import {DeviceInfo} from "../models/security/devicesInfo";
 import {JwtService} from "../application/jwt-service";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class SecurityService {
 
-    constructor(protected userRepository: UserRepository, protected jwtService: JwtService) {
+    constructor(
+        @inject(UserRepository) protected userRepository: UserRepository,
+        @inject(JwtService) protected jwtService: JwtService) {
     }
 
     async getUserDevices(userId: string): Promise<DeviceInfo[] | null> {

@@ -1,5 +1,7 @@
 import bcrypt from "bcrypt";
+import {injectable} from "inversify";
 
+@injectable()
 export class BcriptService {
     constructor() {
     }

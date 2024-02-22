@@ -7,10 +7,16 @@ import {UserCreateModel} from "../models/auth/input";
 import {JwtService} from "../application/jwt-service";
 import {JwtPayload} from "jsonwebtoken";
 import {UserDBType} from "../schemas/userDB";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UserService {
 
-    constructor(protected userRepository: UserRepository, protected jwtService: JwtService, protected bcriptService: BcriptService) {
+    constructor(
+        @inject(UserRepository) protected userRepository: UserRepository,
+        @inject(JwtService) protected jwtService: JwtService,
+        @inject(BcriptService) protected bcriptService: BcriptService
+    ) {
     }
 
     async createUser({password, login, email}: UserCreateModel): Promise<UserVM | null> {

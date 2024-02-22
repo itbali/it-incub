@@ -13,10 +13,14 @@ import {PostCreateModel} from "../models/posts/input";
 import {CommentCreateModel} from "../models/comments/input";
 import {CommentsGetResponse} from "../models/comments/output";
 import {CommentService} from "../services/comment-service";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostController {
 
-    constructor( protected postService: PostService, protected commentService: CommentService) {
+    constructor(
+        @inject(PostService) protected postService: PostService,
+        @inject(CommentService) protected commentService: CommentService) {
     }
 
     async getAllPosts(req: RequestWithQuery<PostQueryParams>, res: Response<PostsGetResponse>) {

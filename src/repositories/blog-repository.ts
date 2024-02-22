@@ -4,7 +4,9 @@ import {BlogCreateModel} from "../models/blogs/input";
 import {BlogQueryParams} from "../models/blogs/query-params";
 
 import {BlogDBType, BlogsModel} from "../schemas/blogDB";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogRepository {
 
     async getAllBlogs({sortBy, sortDirection, pageSize, pageNumber, searchNameTerm}: Required<BlogQueryParams>): Promise<BlogsGetResponse>{

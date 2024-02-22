@@ -1,5 +1,7 @@
 import {EmailAdapter} from "../adapters/email-adapter";
+import {injectable} from "inversify";
 
+@injectable()
 export class EmailService {
     confirmEmail(userEmail:string, confirmCode: string) {
         return EmailAdapter.sendEmail({

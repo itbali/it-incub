@@ -4,7 +4,9 @@ import {PostCreateModel} from "../models/posts/input";
 import {PostQueryParams} from "../models/posts/query-params";
 
 import {PostDBType, PostsModel} from "../schemas/postDB";
+import {injectable} from "inversify";
 
+@injectable()
 export class PostRepository {
 
     async getAllPosts(sortData: Required<PostQueryParams>): Promise<PostsGetResponse> {

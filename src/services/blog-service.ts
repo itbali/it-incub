@@ -4,10 +4,15 @@ import {BlogQueryParams} from "../models/blogs/query-params";
 import {PostCreateModel} from "../models/posts/input";
 import {BlogModel, BlogsGetResponse} from "../models/blogs/output";
 import {PostRepository} from "../repositories/post-repository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogService {
 
-    constructor(protected blogRepository: BlogRepository, protected postRepository: PostRepository) {
+    constructor(
+        @inject(BlogRepository) protected blogRepository: BlogRepository,
+        @inject(PostRepository) protected postRepository: PostRepository
+    ) {
     }
 
     async getAllBlogs({

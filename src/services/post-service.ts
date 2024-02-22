@@ -6,9 +6,15 @@ import {BlogService} from "./blog-service";
 import {CommentRepository} from "../repositories/comment-repository";
 import {CommentVM} from "../models/comments/output";
 import {UserRepository} from "../repositories/user-repository";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class PostService {
-    constructor(protected postRepository: PostRepository, protected blogService: BlogService, protected commentRepository: CommentRepository, protected userRepository: UserRepository) {
+    constructor(
+        @inject(PostRepository) protected postRepository: PostRepository,
+        @inject(BlogService) protected blogService: BlogService,
+        @inject(CommentRepository) protected commentRepository: CommentRepository,
+        @inject(UserRepository) protected userRepository: UserRepository) {
     }
 
     async getAllPosts(sortData: PostQueryParams): Promise<PostsGetResponse> {

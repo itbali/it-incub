@@ -8,15 +8,17 @@ import {BcriptService} from "../application/bcript-service";
 import {UserRepository} from "../repositories/user-repository";
 import {EmailService} from "./email-service";
 import {UserDBType} from "../schemas/userDB";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthService {
     
     constructor(
-        protected jwtService: JwtService,
-        protected userService: UserService,
-        protected scriptService: BcriptService,
-        protected userRepository: UserRepository,
-        protected emailService: EmailService
+        @inject(JwtService) protected jwtService: JwtService,
+        @inject(UserService) protected userService: UserService,
+        @inject(BcriptService) protected scriptService: BcriptService,
+        @inject(UserRepository) protected userRepository: UserRepository,
+        @inject(EmailService) protected emailService: EmailService
     ) {
     }
     async register({password, login, email}: UserCreateModel): Promise<UserVM | null> {

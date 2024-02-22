@@ -12,10 +12,15 @@ import {ObjectId} from "mongodb";
 import {PostsGetResponse, PostVM} from "../models/posts/output";
 import {PostService} from "../services/post-service";
 import {BlogCreateModel, CreatePostInBlogModel} from "../models/blogs/input";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class BlogController {
 
-    constructor(protected blogService: BlogService, protected postService: PostService) {
+    constructor(
+        @inject(BlogService) protected blogService: BlogService,
+        @inject(PostService) protected postService: PostService
+    ) {
     }
     async getBlogs(req: RequestWithQuery<BlogQueryParams>, res: Response<BlogsGetResponse>) {
         const sortData = {

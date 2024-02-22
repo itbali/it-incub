@@ -2,7 +2,9 @@ import {CommentsGetResponse, CommentVM} from "../models/comments/output";
 import {commentMapper} from "../models/comments/mappers/commentMapper";
 import {CommentsQueryParams} from "../models/comments/query-params";
 import {CommentDBType, CommentsModel, LikeStatus} from "../schemas/commentDB";
+import {injectable} from "inversify";
 
+@injectable()
 export class CommentRepository {
     async create(commentToCreate: CommentDBType): Promise<CommentVM | null> {
         const createdComment = await CommentsModel.create(commentToCreate);

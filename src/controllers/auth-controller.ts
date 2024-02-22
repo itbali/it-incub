@@ -4,10 +4,15 @@ import {Request, Response} from "express";
 import {AuthService} from "../services/auth-service";
 import {meOutput} from "../models/users/output";
 import {UserService} from "../services/user-service";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthController {
 
-    constructor(protected authService: AuthService, protected userService: UserService) {
+    constructor(
+        @inject(AuthService) protected authService: AuthService,
+        @inject(UserService) protected userService: UserService
+    ) {
     }
     async register(req: RequestWithBody<UserCreateModel>, res: Response) {
         const createdUser = await this.authService.register({

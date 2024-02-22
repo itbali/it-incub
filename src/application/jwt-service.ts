@@ -1,5 +1,7 @@
 import jwt, {JwtPayload} from "jsonwebtoken";
+import {injectable} from "inversify";
 
+@injectable()
 export class JwtService {
 
     constructor() {

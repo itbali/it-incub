@@ -3,10 +3,12 @@ import {CommentService} from "../services/comment-service";
 import {RequestWithParamsAndBody} from "../models/common/RequestTypes";
 import {CommentCreateModel} from "../models/comments/input";
 import {LikeStatus} from "../schemas/commentDB";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentController {
 
-    constructor(protected commentService: CommentService) {
+    constructor(@inject(CommentService) protected commentService: CommentService) {
     }
     async getComment(req: Request<{ id: string }>, res: Response) {
         const id = req.params.id;

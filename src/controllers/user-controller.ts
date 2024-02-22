@@ -3,10 +3,12 @@ import {RequestWithBody, RequestWithQuery} from "../models/common/RequestTypes";
 import {getUserQueryParams} from "../models/users/getUserQueryParams";
 import {UserService} from "../services/user-service";
 import {UserCreateModel} from "../models/auth/input";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UserController {
 
-    constructor(private userService: UserService) {
+    constructor(@inject(UserService) private userService: UserService) {
     }
     async getAllUsers(req: RequestWithQuery<getUserQueryParams>, res: Response) {
         const users = await this.userService.getAllUsers({

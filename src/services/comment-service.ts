@@ -2,9 +2,11 @@ import {CommentRepository} from "../repositories/comment-repository";
 import {CommentsQueryParams} from "../models/comments/query-params";
 import {CommentsGetResponse} from "../models/comments/output";
 import {LikeStatus} from "../schemas/commentDB";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class CommentService {
-    constructor(protected commentRepository: CommentRepository) {
+    constructor(@inject(CommentRepository) protected commentRepository: CommentRepository) {
     }
 
     async getCommentsByPostId({

@@ -2,10 +2,15 @@ import {Request, Response} from "express";
 import {DeviceInfo} from "../models/security/devicesInfo";
 import {JwtService} from "../application/jwt-service";
 import {SecurityService} from "../services/security-service";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class SecurityController {
 
-    constructor(protected jwtService: JwtService, protected securityService: SecurityService) {
+    constructor(
+        @inject(JwtService) protected jwtService: JwtService,
+        @inject(SecurityService) protected securityService: SecurityService
+    ) {
     }
     async getDevices(req: Request, res: Response<DeviceInfo[] | null>) {
         const refreshToken = req.cookies.refreshToken;
