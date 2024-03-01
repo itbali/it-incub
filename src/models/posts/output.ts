@@ -6,6 +6,16 @@ export type PostVM = {
     blogId: string,
     blogName: string,
     createdAt: string,
+    likesInfo: {
+        likesCount: number,
+        dislikesCount: number,
+        myStatus: string,
+        newestLikes?: string[]
+        usersLiked?: {
+            userId: string,
+            likeStatus: string,
+        }[],
+    }
 }
 
 export type PostsGetResponse = {

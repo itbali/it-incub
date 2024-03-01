@@ -24,13 +24,14 @@ export class PostController {
     }
 
     async getAllPosts(req: RequestWithQuery<PostQueryParams>, res: Response<PostsGetResponse>) {
+        const userId = req.userId || undefined;
         const sortData = {
             sortBy: req.query.sortBy,
             sortDirection: req.query.sortDirection,
             pageNumber: req.query.pageNumber,
             pageSize: req.query.pageSize,
         }
-        const posts = await this.postService.getAllPosts(sortData);
+        const posts = await this.postService.getAllPosts(sortData, userId);
         res.send(posts);
     }
 
@@ -39,7 +40,8 @@ export class PostController {
             res.sendStatus(400)
             return;
         }
-        const post = await this.postService.getPostById(req.params.id);
+        const userId = req.userId || undefined;
+        const post = await this.postService.getPostById(req.params.id, userId);
         if (!post) {
             res.sendStatus(404)
             return;
@@ -48,12 +50,13 @@ export class PostController {
     }
 
     async createPost(req: RequestWithBody<PostCreateModel>, res: Response<PostVM | number>) {
+        const userId = req.userId || undefined;
         if (!ObjectId.isValid(req.body.blogId)) {
             res.sendStatus(400)
             return;
         }
         const {title, shortDescription, content, blogId} = req.body;
-        const post = await this.postService.createPost({title, shortDescription, content, blogId})
+        const post = await this.postService.createPost({title, shortDescription, content, blogId}, userId!);
         if (!post) {
             res.sendStatus(404)
             return;
@@ -62,12 +65,13 @@ export class PostController {
     }
 
     async updatePost(req: Request<{ id: string }>, res: Response<number>) {
+        const userId = req.userId || undefined;
         if (!ObjectId.isValid(req.params.id)) {
             res.sendStatus(400)
             return;
         }
         const {title, shortDescription, content, blogId} = req.body;
-        const post = await this.postService.updatePost({id: req.params.id, title, shortDescription, content, blogId})
+        const post = await this.postService.updatePost({id: req.params.id, title, shortDescription, content, blogId}, userId);
         if (!post) {
             res.sendStatus(404)
             return;
@@ -76,11 +80,12 @@ export class PostController {
     }
 
     async deletePost(req: Request<{ id: string }>, res: Response<number>) {
+        const userId = req.userId || undefined;
         if (!ObjectId.isValid(req.params.id)) {
             res.sendStatus(400)
             return;
         }
-        const post = await this.postService.deletePost(req.params.id);
+        const post = await this.postService.deletePost(req.params.id, userId);
         if (!post) {
             res.sendStatus(404)
             return;
@@ -91,7 +96,7 @@ export class PostController {
     async createComment(req: RequestWithParamsAndBody<{ id: string }, CommentCreateModel>, res: Response) {
         const postId = req.params.id
         const content = req.body.content
-        const comment = await this.postService.addCommentToPost(postId, content, req.userId!)
+        const comment = await this.postService.addCommentToPost(postId, content, req.userId!);
         if (!comment) {
             res.sendStatus(404)
             return
@@ -110,7 +115,7 @@ export class PostController {
             pageSize: req.query.pageSize,
             postId: req.params.id
         }
-        const post = await this.postService.getPostById(req.params.id);
+        const post = await this.postService.getPostById(req.params.id, userId);
         if (!post) {
             res.sendStatus(404)
             return;
@@ -118,5 +123,20 @@ export class PostController {
 
         const comments = await this.commentService.getCommentsByPostId(sortData, userId);
         res.send(comments);
+    }
+
+    async setLikeStatus(req: RequestWithParamsAndQuery<{ id: string }, { status: string }>, res: Response<number>) {
+        const postId = req.params.id
+        const status = req.query.status
+        if (status !== "like" && status !== "dislike") {
+            res.sendStatus(400)
+            return;
+        }
+        const result = await this.postService.setLikeStatus(postId, req.userId!, status);
+        if (!result) {
+            res.sendStatus(404)
+            return;
+        }
+        res.sendStatus(204);
     }
 }

@@ -9,7 +9,7 @@ import {injectable} from "inversify";
 @injectable()
 export class PostRepository {
 
-    async getAllPosts(sortData: Required<PostQueryParams>): Promise<PostsGetResponse> {
+    async getAllPosts(sortData: Required<PostQueryParams>, userId?:string): Promise<PostsGetResponse> {
         const {sortBy, sortDirection, pageSize, pageNumber} = sortData;
         const postsCount = await PostsModel.countDocuments();
         const posts = await PostsModel
@@ -24,11 +24,11 @@ export class PostRepository {
             page: pageNumber,
             pageSize,
             totalCount: postsCount,
-            items: posts.map(postMapper),
+            items: posts.map(p=>postMapper(p, userId)),
         }
     }
 
-    async getAllPostsByBlogId({sortBy, sortDirection, pageSize, pageNumber, blogId}: Required<PostQueryParams> & {blogId: string}): Promise<PostsGetResponse> {
+    async getAllPostsByBlogId({sortBy, sortDirection, pageSize, pageNumber, blogId}: Required<PostQueryParams> & {blogId: string}, userId?: string): Promise<PostsGetResponse> {
         const postsCount = await PostsModel.countDocuments({blogId});
         const posts = await PostsModel
             .find({blogId})
@@ -42,24 +42,24 @@ export class PostRepository {
             page: pageNumber,
             pageSize,
             totalCount: postsCount,
-            items: posts.map(postMapper),
+            items: posts.map(p=>postMapper(p, userId)),
         }
     }
 
-    async getPostById(id: string): Promise<PostVM | null> {
+    async getPostById(id: string, userId?:string): Promise<PostVM | null> {
         const post = await PostsModel.findOne({_id: id}).lean();
-        return post ? postMapper(post) : null;
+        return post ? postMapper(post, userId) : null;
     }
 
-    async createPost(post: PostDBType) {
+    async createPost(post: PostDBType, userId: string): Promise<PostVM> {
         const postInstance = new PostsModel(post);
         const createdPost = await postInstance.save();
-        return postMapper(createdPost)
+        return postMapper(createdPost, userId);
     }
 
     async updatePost({id, title, shortDescription, content, blogId}: PostCreateModel & {
         id: string
-    }): Promise<PostVM | null> {
+    }, userId?:string): Promise<PostVM | null> {
         const updatedPost = await PostsModel.findOneAndUpdate({_id: id}, {
             $set: {
                 title,
@@ -68,11 +68,40 @@ export class PostRepository {
                 blogId
             }
         });
-        return updatedPost ? postMapper(updatedPost) : null;
+        return updatedPost ? postMapper(updatedPost, userId) : null;
     }
 
-    async deletePost(id: string): Promise<PostVM | null> {
+    async deletePost(id: string, userId?: string): Promise<PostVM | null> {
         const deletedPost = await PostsModel.findOneAndDelete({_id: id});
-        return deletedPost ? postMapper(deletedPost) : null;
+        return deletedPost ? postMapper(deletedPost, userId) : null;
+    }
+
+    async setLikeStatus(postId: string, userId: string, likeStatus: "none" | "like" | "dislike"): Promise<PostVM | null> {
+        const post = await PostsModel.findOne({_id: postId});
+        if(!post){
+            return null;
+        }
+        const myStatus = post.likesInfo.usersLiked?.find(like => like.userId === userId);
+        if(myStatus?.likeStatus === "like"){
+            post.likesInfo.likesCount--;
+        }
+        if(myStatus?.likeStatus === "dislike"){
+            post.likesInfo.dislikesCount--;
+        }
+
+        if(myStatus){
+            likeStatus === "none"
+                ? post.likesInfo.usersLiked = post.likesInfo.usersLiked!.filter(like => like.userId !== userId)
+                : post.likesInfo.usersLiked = post.likesInfo.usersLiked!.map(like => like.userId === userId ? {userId, likeStatus} : like);
+        }
+
+        if(likeStatus === "like"){
+            post.likesInfo.likesCount++;
+        }
+        if(likeStatus === "dislike"){
+            post.likesInfo.dislikesCount++;
+        }
+        await post.save();
+        return postMapper(post, userId);
     }
 }

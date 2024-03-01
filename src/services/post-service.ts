@@ -17,17 +17,17 @@ export class PostService {
         @inject(UserRepository) protected userRepository: UserRepository) {
     }
 
-    async getAllPosts(sortData: PostQueryParams): Promise<PostsGetResponse> {
+    async getAllPosts(sortData: PostQueryParams, userId?:string): Promise<PostsGetResponse> {
         const {sortBy = "createdAt", sortDirection = "desc", pageSize = 10, pageNumber = 1} = sortData;
         return await this.postRepository.getAllPosts({
             sortBy,
             sortDirection,
             pageSize: Number(pageSize),
             pageNumber: Number(pageNumber)
-        })
+        }, userId)
     }
 
-    async getAllPostsByBlogId(sortData: PostQueryParams & { blogId: string }): Promise<PostsGetResponse> {
+    async getAllPostsByBlogId(sortData: PostQueryParams & { blogId: string }, userId?:string): Promise<PostsGetResponse> {
         const filledSortData = {
             sortBy: sortData.sortBy ?? "createdAt",
             sortDirection: sortData.sortDirection ?? "desc",
@@ -35,29 +35,41 @@ export class PostService {
             pageSize: Number(sortData.pageSize) || 10,
             blogId: sortData.blogId
         };
-        return await this.postRepository.getAllPostsByBlogId(filledSortData);
+        return await this.postRepository.getAllPostsByBlogId(filledSortData, userId);
     }
 
-    async getPostById(id: string): Promise<PostVM | null> {
-        return await this.postRepository.getPostById(id);
+    async getPostById(id: string, userId?:string): Promise<PostVM | null> {
+        return await this.postRepository.getPostById(id, userId);
     }
 
-    async createPost({title, shortDescription, content, blogId}: PostCreateModel): Promise<PostVM> {
+    async createPost({title, shortDescription, content, blogId}: PostCreateModel, userId:string): Promise<PostVM> {
         const blog = await this.blogService.getBlogById(blogId)
-        const post = {title, shortDescription, content, blogId, blogName: blog!.name, createdAt: new Date().toISOString()}
-        return await this.postRepository.createPost(post)
+        const post = {
+            title,
+            shortDescription,
+            content,
+            blogId,
+            blogName: blog!.name,
+            createdAt: new Date().toISOString(),
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                usersLiked: [],
+            }
+        }
+        return await this.postRepository.createPost(post, userId);
     }
 
-    async updatePost(post: PostCreateModel & { id: string }): Promise<PostVM | null> {
-        return await this.postRepository.updatePost(post);
+    async updatePost(post: PostCreateModel & { id: string }, userId?:string): Promise<PostVM | null> {
+        return await this.postRepository.updatePost(post, userId);
     }
 
-    async deletePost(id: string): Promise<PostVM | null> {
-        return await this.postRepository.deletePost(id);
+    async deletePost(id: string, userId?:string): Promise<PostVM | null> {
+        return await this.postRepository.deletePost(id, userId);
     }
 
     async addCommentToPost(postId:string, content: string, userId: string): Promise<CommentVM | null>{
-        const post = await this.postRepository.getPostById(postId)
+        const post = await this.postRepository.getPostById(postId, userId)
         if(!post){
             return null
         }
@@ -80,5 +92,24 @@ export class PostService {
                 usersLiked: [],
             }
         })
+    }
+
+    async setLikeStatus(postId: string, userId: string, likeStatus: "like" | "dislike" | "none"): Promise<PostVM | null>{
+        const post = await this.postRepository.getPostById(postId, userId)
+        if(!post){
+            return null
+        }
+        const user = await this.userRepository.getUserById(userId)
+        if(!user){
+            return null
+        }
+        if(likeStatus === "none" || post.likesInfo.myStatus === likeStatus){
+            return post
+        }
+        const updatedPost = await this.postRepository.setLikeStatus(postId, userId, likeStatus)
+        if(!updatedPost){
+            return null
+        }
+        return updatedPost
     }
 }
