@@ -125,9 +125,9 @@ export class PostController {
         res.send(comments);
     }
 
-    async setLikeStatus(req: RequestWithParamsAndQuery<{ id: string }, { status: string }>, res: Response<number>) {
+    async setLikeStatus(req: RequestWithParamsAndBody<{ id: string }, { likeStatus: string }>, res: Response<number>) {
         const postId = req.params.id
-        const status = req.query.status
+        const status = req.body.likeStatus
         if (status !== "like" && status !== "dislike") {
             res.sendStatus(400)
             return;
