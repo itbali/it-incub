@@ -78,7 +78,6 @@ export class CommentRepository {
             comment!.likesInfo.dislikesCount++;
         }
         await comment!.save();
-        console.log(comment);
-        return commentMapper(comment!);
+        return commentMapper(comment!, userId);
     }
 }
