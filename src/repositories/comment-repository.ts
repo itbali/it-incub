@@ -37,9 +37,7 @@ export class CommentRepository {
 
     async getCommentById(id: string, userId?: string): Promise<CommentVM | null> {
         const comment = await CommentsModel.findOne({_id: id}).lean();
-        return comment
-            ? commentMapper(comment, userId)
-            : null;
+        return comment ? commentMapper(comment, userId) : null;
     }
 
     async updateComment(comment: CommentVM): Promise<CommentVM | null> {

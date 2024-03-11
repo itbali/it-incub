@@ -75,8 +75,12 @@ export class CommentService {
 
     async likeComment(commentId: string, userId: string, likeStatus: LikeStatus) {
         const comment = await this.commentRepository.getCommentById(commentId);
+        console.log({commentId, comment})
         if (!comment) {
             return {error: "not_found"};
+        }
+        if(comment.commentatorInfo.userId !== userId){
+            return {error: "forbidden"};
         }
         if (comment.likesInfo.myStatus === likeStatus) {
             return comment;
