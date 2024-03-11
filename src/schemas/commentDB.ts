@@ -38,6 +38,6 @@ const commentsSchema = new mongoose.Schema({
     },
 })
 
-export type LikeStatus = 'like' | 'dislike' | 'none';
+export type LikeStatus = 'Like' | 'Dislike' | 'None';
 
 export const CommentsModel = mongoose.model<CommentDBType>('comments', commentsSchema);

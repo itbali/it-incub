@@ -13,6 +13,6 @@ export const commentMapper = (comment: WithId<CommentDBType>, userId?: string): 
     likesInfo: {
         likesCount: comment.likesInfo.likesCount,
         dislikesCount: comment.likesInfo.dislikesCount,
-        myStatus: comment.likesInfo.usersLiked?.find(like => like.userId === userId)?.likeStatus || 'none',
+        myStatus: comment.likesInfo.usersLiked?.find(like => like.userId === userId)?.likeStatus || 'None',
     }
 })
