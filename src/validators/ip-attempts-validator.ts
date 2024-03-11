@@ -10,7 +10,7 @@ export const ipAttemptsValidator = async (req: Request, res: Response, next: Nex
     const now = new Date();
     const tenSecondsAgo = new Date(now.getTime() - 10000);
     const filteredIpAttempts = ipAttempts.filter(attempt => attempt.date > tenSecondsAgo);
-    const isBlocked = filteredIpAttempts.length >= 5;
+    const isBlocked = filteredIpAttempts.length > 5;
 
     if (isBlocked) {
         console.log({isBlocked, ipAttempts, filteredIpAttempts})
