@@ -67,6 +67,8 @@ export class CommentRepository {
             likeStatus === "None"
                 ? comment!.likesInfo.usersLiked = comment!.likesInfo.usersLiked!.filter(like => like.userId !== userId)
                 : comment!.likesInfo.usersLiked = comment!.likesInfo.usersLiked!.map(like => like.userId === userId ? { userId, likeStatus } : like);
+        } else {
+            comment!.likesInfo.usersLiked?.push({ userId, likeStatus });
         }
 
         if (likeStatus === "Like") {
@@ -76,6 +78,7 @@ export class CommentRepository {
             comment!.likesInfo.dislikesCount++;
         }
         await comment!.save();
+        console.log(comment);
         return commentMapper(comment!);
     }
 }
