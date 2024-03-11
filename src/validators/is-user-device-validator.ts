@@ -17,7 +17,6 @@ export const isUserDeviceValidator = async (req: Request, res: Response, next:Ne
     }
 
     const userDevices = await SecurityService.getUserDevices(userId);
-    console.log({ deviceId, userDevices });
     if (!userDevices || !userDevices.find(d => d.deviceId === deviceId)) {
         res.sendStatus(403);
         return;
