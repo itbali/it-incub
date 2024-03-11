@@ -22,5 +22,6 @@ export const isUserDeviceValidator = async (req: Request, res: Response, next:Ne
         res.sendStatus(403);
         return;
     }
+
     next();
 }
