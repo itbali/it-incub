@@ -78,9 +78,6 @@ export class CommentService {
         if (!comment) {
             return {error: "not_found"};
         }
-        if(comment.commentatorInfo.userId !== userId){
-            return {error: "forbidden"};
-        }
         if (comment.likesInfo.myStatus === likeStatus) {
             return comment;
         }
