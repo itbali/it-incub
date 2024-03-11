@@ -37,6 +37,7 @@ export class PostService {
     }
 
     async createPost({title, shortDescription, content, blogId}: PostCreateModel): Promise<PostVM> {
+        console.log("blogId", blogId, {blogService: this.blogService})
         const blog = await this.blogService.getBlogById(blogId)
         const post = {title, shortDescription, content, blogId, blogName: blog!.name, createdAt: new Date().toISOString()}
         return await this.postRepository.createPost(post)
