@@ -9,7 +9,7 @@ export class CommentRepository {
         if (!createdComment) {
             return null;
         }
-        return createdComment.toObject();
+        return commentMapper(createdComment, commentToCreate.commentatorInfo.userId);
     }
 
     async getCommentsByPostId({
