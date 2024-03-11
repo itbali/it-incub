@@ -44,7 +44,6 @@ export class AuthController {
         const userAgentTitle = req.headers["user-agent"]
             ? req.headers["user-agent"]
             : "unknown";
-        console.log({login: req.body.loginOrEmail, password: req.body.password, userAgentTitle})
         const loginResult = await this.authService.login({
             loginOrEmail: req.body.loginOrEmail,
             password: req.body.password,

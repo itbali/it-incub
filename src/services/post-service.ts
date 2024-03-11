@@ -8,7 +8,12 @@ import {CommentVM} from "../models/comments/output";
 import {UserRepository} from "../repositories/user-repository";
 
 export class PostService {
-    constructor(protected postRepository: PostRepository, protected blogService: BlogService, protected commentRepository: CommentRepository, protected userRepository: UserRepository) {
+    constructor(
+        protected postRepository: PostRepository,
+        protected blogService: BlogService,
+        protected commentRepository: CommentRepository,
+        protected userRepository: UserRepository
+    ) {
     }
 
     async getAllPosts(sortData: PostQueryParams): Promise<PostsGetResponse> {
@@ -37,7 +42,6 @@ export class PostService {
     }
 
     async createPost({title, shortDescription, content, blogId}: PostCreateModel): Promise<PostVM> {
-        console.log("blogId", blogId, {blogService: this.blogService})
         const blog = await this.blogService.getBlogById(blogId)
         const post = {title, shortDescription, content, blogId, blogName: blog!.name, createdAt: new Date().toISOString()}
         return await this.postRepository.createPost(post)
