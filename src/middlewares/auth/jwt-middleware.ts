@@ -33,4 +33,5 @@ export const getUserFromTokenMiddleware = async (req: Request, res: Response, ne
     }
     req.userId = user.userId
     next();
+    return;
 }
