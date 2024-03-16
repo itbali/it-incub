@@ -27,6 +27,7 @@ export const getUserFromTokenMiddleware = async (req: Request, res: Response, ne
     }
 
     const user = await userService.getUserByIdFromToken(token)
+    console.log({user})
     if (!user) {
         next();
         return;
