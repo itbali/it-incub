@@ -4,12 +4,14 @@ import {userService} from "../../composition-roots/user-composition";
 export const jwtMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     const [type, token] = authHeader?.split(" ") ?? [];
+    console.log({token})
     if (type !== "Bearer" || !token) {
         res.sendStatus(401)
         return;
     }
 
     const user = await userService.getUserByIdFromToken(token)
+    console.log({user})
     if (!user) {
         res.sendStatus(401)
         return;
@@ -21,6 +23,7 @@ export const jwtMiddleware = async (req: Request, res: Response, next: NextFunct
 export const getUserFromTokenMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     const [type, token] = authHeader?.split(" ") ?? [];
+    console.log({token})
     if (type !== "Bearer" || !token) {
         next();
         return;
