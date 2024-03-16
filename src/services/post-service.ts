@@ -14,7 +14,8 @@ export class PostService {
         @inject(PostRepository) protected postRepository: PostRepository,
         @inject(BlogService) protected blogService: BlogService,
         @inject(CommentRepository) protected commentRepository: CommentRepository,
-        @inject(UserRepository) protected userRepository: UserRepository) {
+        @inject(UserRepository) protected userRepository: UserRepository
+    ) {
     }
 
     async getAllPosts(sortData: PostQueryParams, userId?:string): Promise<PostsGetResponse> {

@@ -76,7 +76,6 @@ export class CommentController {
                 return;
             }
         }
-
         res.sendStatus(204);
     }
 }

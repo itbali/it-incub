@@ -34,10 +34,13 @@ const commentsSchema = new mongoose.Schema({
     likesInfo: {
         likesCount: { type: Number, default: 0 },
         dislikesCount: { type: Number, default: 0 },
-        myStatus: { type: String, default: 'none' },
+        usersLiked: [{
+            userId: { type: String, required: true },
+            likeStatus: { type: String, required: true },
+        }],
     },
 })
 
-export type LikeStatus = 'like' | 'dislike' | 'none';
+export type LikeStatus = 'Like' | 'Dislike' | 'None';
 
 export const CommentsModel = mongoose.model<CommentDBType>('comments', commentsSchema);

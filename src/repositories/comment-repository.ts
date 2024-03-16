@@ -11,7 +11,7 @@ export class CommentRepository {
         if (!createdComment) {
             return null;
         }
-        return createdComment.toObject();
+        return commentMapper(createdComment, commentToCreate.commentatorInfo.userId);
     }
 
     async getCommentsByPostId({
@@ -39,9 +39,7 @@ export class CommentRepository {
 
     async getCommentById(id: string, userId?: string): Promise<CommentVM | null> {
         const comment = await CommentsModel.findOne({_id: id}).lean();
-        return comment
-            ? commentMapper(comment, userId)
-            : null;
+        return comment ? commentMapper(comment, userId) : null;
     }
 
     async updateComment(comment: CommentVM): Promise<CommentVM | null> {
@@ -61,25 +59,27 @@ export class CommentRepository {
         const comment = await CommentsModel.findOne({_id: commentId});
         const myStatus = comment?.likesInfo.usersLiked?.find(like => like.userId === userId);
 
-        if (myStatus?.likeStatus === "like") {
+        if (myStatus?.likeStatus === "Like") {
             comment!.likesInfo.likesCount--;
         }
-        if (myStatus?.likeStatus === "dislike") {
+        if (myStatus?.likeStatus === "Dislike") {
             comment!.likesInfo.dislikesCount--;
         }
         if (myStatus) {
-            likeStatus === "none"
+            likeStatus === "None"
                 ? comment!.likesInfo.usersLiked = comment!.likesInfo.usersLiked!.filter(like => like.userId !== userId)
                 : comment!.likesInfo.usersLiked = comment!.likesInfo.usersLiked!.map(like => like.userId === userId ? { userId, likeStatus } : like);
+        } else {
+            comment!.likesInfo.usersLiked?.push({ userId, likeStatus });
         }
 
-        if (likeStatus === "like") {
+        if (likeStatus === "Like") {
             comment!.likesInfo.likesCount++;
         }
-        if (likeStatus === "dislike") {
+        if (likeStatus === "Dislike") {
             comment!.likesInfo.dislikesCount++;
         }
         await comment!.save();
-        return commentMapper(comment!);
+        return commentMapper(comment!, userId);
     }
 }

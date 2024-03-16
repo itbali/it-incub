@@ -76,7 +76,7 @@ export class CommentService {
     }
 
     async likeComment(commentId: string, userId: string, likeStatus: LikeStatus) {
-        const comment = await this.commentRepository.getCommentById(commentId);
+        const comment = await this.commentRepository.getCommentById(commentId,userId);
         if (!comment) {
             return {error: "not_found"};
         }

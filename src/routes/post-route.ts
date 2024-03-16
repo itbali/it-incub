@@ -1,7 +1,7 @@
 import express from "express";
 import {authMiddleware} from "../middlewares/auth/auth-middleware";
 import {postValidation} from "../validators/post-validator";
-import {jwtMiddleware} from "../middlewares/auth/jwt-middleware";
+import {getUserFromTokenMiddleware, jwtMiddleware} from "../middlewares/auth/jwt-middleware";
 import {commentValidation} from "../validators/comment-validator";
 import {postController} from "../composition-roots/post-composition";
 
@@ -14,4 +14,4 @@ postRoute.post("/", authMiddleware, postValidation(), postController.createPost.
 postRoute.put("/:id", authMiddleware, postValidation(), postController.updatePost.bind(postController));
 postRoute.delete("/:id", authMiddleware, postController.deletePost.bind(postController));
 postRoute.post("/:id/comments",jwtMiddleware, commentValidation() ,postController.createComment.bind(postController));
-postRoute.get("/:id/comments", postController.getComments.bind(postController));
+postRoute.get("/:id/comments", getUserFromTokenMiddleware, postController.getComments.bind(postController));
