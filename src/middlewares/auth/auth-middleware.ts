@@ -20,6 +20,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         return;
     }
     const user = await new UserRepository(jwtService).getUserByLoginOrEmail(username);
-    req.userId = user!.id;
+    req.userId = user?.id || null;
     next();
 }
