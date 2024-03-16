@@ -31,7 +31,7 @@ const postsSchema = new mongoose.Schema({
     likesInfo: {
         likesCount: {type: Number, default: 0},
         dislikesCount: {type: Number, default: 0},
-        myStatus: {type: String, default: 'none'},
+        myStatus: {type: String, default: 'None'},
     },
 })
 export const PostsModel = mongoose.model<PostDBType>("posts", postsSchema)

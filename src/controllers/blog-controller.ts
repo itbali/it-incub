@@ -98,7 +98,8 @@ export class BlogController {
             title,
             shortDescription,
             content,
-            blogId: req.params.id
+            blogId: req.params.id,
+            userId: req.userId!
         })
         const post = await this.postService.getPostById(createdPostId);
         if (!post) {

@@ -1,9 +1,11 @@
 import {NextFunction, Request, Response} from "express";
 import {configDotenv} from "dotenv";
+import {UserRepository} from "../../repositories/user-repository";
+import {jwtService} from "../../composition-roots/security-composition";
 
 configDotenv();
 // BASE64 auth
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     const [type, credentials] = authHeader?.split(" ") ?? [];
     if (type !== "Basic") {
@@ -17,6 +19,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         res.sendStatus(401)
         return;
     }
-
+    const user = await new UserRepository(jwtService).getUserByLoginOrEmail(username);
+    req.userId = user!.id;
     next();
 }

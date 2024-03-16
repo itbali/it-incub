@@ -76,29 +76,31 @@ export class PostRepository {
         return deletedPost ? postMapper(deletedPost, userId) : null;
     }
 
-    async setLikeStatus(postId: string, userId: string, likeStatus: "none" | "like" | "dislike"): Promise<PostVM | null> {
+    async setLikeStatus(postId: string, userId: string, likeStatus: "None" | "Like" | "Dislike"): Promise<PostVM | null> {
         const post = await PostsModel.findOne({_id: postId});
         if(!post){
             return null;
         }
         const myStatus = post.likesInfo.usersLiked?.find(like => like.userId === userId);
-        if(myStatus?.likeStatus === "like"){
+        if(myStatus?.likeStatus === "Like"){
             post.likesInfo.likesCount--;
         }
-        if(myStatus?.likeStatus === "dislike"){
+        if(myStatus?.likeStatus === "Dislike"){
             post.likesInfo.dislikesCount--;
         }
 
         if(myStatus){
-            likeStatus === "none"
+            likeStatus === "None"
                 ? post.likesInfo.usersLiked = post.likesInfo.usersLiked!.filter(like => like.userId !== userId)
                 : post.likesInfo.usersLiked = post.likesInfo.usersLiked!.map(like => like.userId === userId ? {userId, likeStatus} : like);
+        } else {
+            post.likesInfo.usersLiked?.push({userId, likeStatus});
         }
 
-        if(likeStatus === "like"){
+        if(likeStatus === "Like"){
             post.likesInfo.likesCount++;
         }
-        if(likeStatus === "dislike"){
+        if(likeStatus === "Dislike"){
             post.likesInfo.dislikesCount++;
         }
         await post.save();

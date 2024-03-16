@@ -34,7 +34,7 @@ export class BlogService {
         return await this.blogRepository.createBlog(blog);
     }
 
-    async createPostBlog({blogId, title, shortDescription, content}: PostCreateModel): Promise<string> {
+    async createPostBlog({blogId, title, shortDescription, content, userId}: PostCreateModel & {userId: string}): Promise<string> {
         const blog = await this.blogRepository.getBlogById(blogId);
         const post = {
             blogId,
@@ -42,9 +42,14 @@ export class BlogService {
             shortDescription,
             content,
             blogName: blog!.name,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            likesInfo: {
+                likesCount: 0,
+                dislikesCount: 0,
+                usersLiked: [],
+            }
         }
-        const createdPost = await this.postRepository.createPost({...post});
+        const createdPost = await this.postRepository.createPost(post, userId);
         return createdPost.id;
     }
 

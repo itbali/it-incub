@@ -95,7 +95,7 @@ export class PostService {
         })
     }
 
-    async setLikeStatus(postId: string, userId: string, likeStatus: "like" | "dislike" | "none"): Promise<PostVM | null>{
+    async setLikeStatus(postId: string, userId: string, likeStatus: "Like" | "Dislike" | "None"): Promise<PostVM | null>{
         const post = await this.postRepository.getPostById(postId, userId)
         if(!post){
             return null
@@ -104,7 +104,7 @@ export class PostService {
         if(!user){
             return null
         }
-        if(likeStatus === "none" || post.likesInfo.myStatus === likeStatus){
+        if(likeStatus === "None" || post.likesInfo.myStatus === likeStatus){
             return post
         }
         const updatedPost = await this.postRepository.setLikeStatus(postId, userId, likeStatus)
