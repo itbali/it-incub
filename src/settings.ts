@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express, {Request, Response} from "express";
 import {blogRoute} from "./routes/blog-route";
 import {postRoute} from "./routes/post-route";
