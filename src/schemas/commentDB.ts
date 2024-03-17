@@ -10,7 +10,7 @@ export class CommentDBType {
             userId: string,
             userLogin: string,
         },
-        public likesInfo: {
+        public extendedLikesInfo: {
             likesCount: number,
             dislikesCount: number,
             usersLiked?: {
@@ -31,7 +31,7 @@ const commentsSchema = new mongoose.Schema({
         userId: { type: String, required: true },
         userLogin: { type: String, required: true },
     },
-    likesInfo: {
+    extendedLikesInfo: {
         likesCount: { type: Number, default: 0 },
         dislikesCount: { type: Number, default: 0 },
         usersLiked: [{

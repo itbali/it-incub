@@ -8,7 +8,7 @@ export type CommentVM = {
         userId: string,
         userLogin: string,
     },
-    likesInfo: {
+    extendedLikesInfo: {
         likesCount: number,
         dislikesCount: number,
         myStatus: LikeStatus,

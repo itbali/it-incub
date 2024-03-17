@@ -52,7 +52,7 @@ export class PostService {
             blogId,
             blogName: blog!.name,
             createdAt: new Date().toISOString(),
-            likesInfo: {
+            extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
                 usersLiked: [],
@@ -87,7 +87,7 @@ export class PostService {
                 userId: user.id,
                 userLogin: user.login,
             },
-            likesInfo: {
+            extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
                 usersLiked: [],
@@ -104,7 +104,7 @@ export class PostService {
         if(!user){
             return null
         }
-        if(likeStatus === "None" || post.likesInfo.myStatus === likeStatus){
+        if(likeStatus === "None" || post.extendedLikesInfo.myStatus === likeStatus){
             return post
         }
         const updatedPost = await this.postRepository.setLikeStatus(postId, userId, likeStatus)

@@ -81,27 +81,27 @@ export class PostRepository {
         if(!post){
             return null;
         }
-        const myStatus = post.likesInfo.usersLiked?.find(like => like.userId === userId);
+        const myStatus = post.extendedLikesInfo.usersLiked?.find(like => like.userId === userId);
         if(myStatus?.likeStatus === "Like"){
-            post.likesInfo.likesCount--;
+            post.extendedLikesInfo.likesCount--;
         }
         if(myStatus?.likeStatus === "Dislike"){
-            post.likesInfo.dislikesCount--;
+            post.extendedLikesInfo.dislikesCount--;
         }
 
         if(myStatus){
             likeStatus === "None"
-                ? post.likesInfo.usersLiked = post.likesInfo.usersLiked!.filter(like => like.userId !== userId)
-                : post.likesInfo.usersLiked = post.likesInfo.usersLiked!.map(like => like.userId === userId ? {userId, likeStatus} : like);
+                ? post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.filter(like => like.userId !== userId)
+                : post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.map(like => like.userId === userId ? {userId, likeStatus} : like);
         } else {
-            post.likesInfo.usersLiked?.push({userId, likeStatus});
+            post.extendedLikesInfo.usersLiked?.push({userId, likeStatus});
         }
 
         if(likeStatus === "Like"){
-            post.likesInfo.likesCount++;
+            post.extendedLikesInfo.likesCount++;
         }
         if(likeStatus === "Dislike"){
-            post.likesInfo.dislikesCount++;
+            post.extendedLikesInfo.dislikesCount++;
         }
         await post.save();
         return postMapper(post, userId);

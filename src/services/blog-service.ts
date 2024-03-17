@@ -43,7 +43,7 @@ export class BlogService {
             content,
             blogName: blog!.name,
             createdAt: new Date().toISOString(),
-            likesInfo: {
+            extendedLikesInfo: {
                 likesCount: 0,
                 dislikesCount: 0,
                 usersLiked: [],

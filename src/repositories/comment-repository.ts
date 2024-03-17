@@ -57,27 +57,27 @@ export class CommentRepository {
 
     async setLike(commentId: string, userId: string, likeStatus: LikeStatus) {
         const comment = await CommentsModel.findOne({_id: commentId});
-        const myStatus = comment?.likesInfo.usersLiked?.find(like => like.userId === userId);
+        const myStatus = comment?.extendedLikesInfo.usersLiked?.find(like => like.userId === userId);
 
         if (myStatus?.likeStatus === "Like") {
-            comment!.likesInfo.likesCount--;
+            comment!.extendedLikesInfo.likesCount--;
         }
         if (myStatus?.likeStatus === "Dislike") {
-            comment!.likesInfo.dislikesCount--;
+            comment!.extendedLikesInfo.dislikesCount--;
         }
         if (myStatus) {
             likeStatus === "None"
-                ? comment!.likesInfo.usersLiked = comment!.likesInfo.usersLiked!.filter(like => like.userId !== userId)
-                : comment!.likesInfo.usersLiked = comment!.likesInfo.usersLiked!.map(like => like.userId === userId ? { userId, likeStatus } : like);
+                ? comment!.extendedLikesInfo.usersLiked = comment!.extendedLikesInfo.usersLiked!.filter(like => like.userId !== userId)
+                : comment!.extendedLikesInfo.usersLiked = comment!.extendedLikesInfo.usersLiked!.map(like => like.userId === userId ? { userId, likeStatus } : like);
         } else {
-            comment!.likesInfo.usersLiked?.push({ userId, likeStatus });
+            comment!.extendedLikesInfo.usersLiked?.push({ userId, likeStatus });
         }
 
         if (likeStatus === "Like") {
-            comment!.likesInfo.likesCount++;
+            comment!.extendedLikesInfo.likesCount++;
         }
         if (likeStatus === "Dislike") {
-            comment!.likesInfo.dislikesCount++;
+            comment!.extendedLikesInfo.dislikesCount++;
         }
         await comment!.save();
         return commentMapper(comment!, userId);

@@ -9,7 +9,7 @@ export class PostDBType  {
         public blogId: string,
         public blogName: string,
         public createdAt: string,
-        public likesInfo: {
+        public extendedLikesInfo: {
             likesCount: number,
             dislikesCount: number,
             usersLiked?: {
@@ -28,7 +28,7 @@ const postsSchema = new mongoose.Schema({
     blogId: {type: String, required: true},
     blogName: {type: String, required: true},
     createdAt: {type: String, required: true},
-    likesInfo: {
+    extendedLikesInfo: {
         likesCount: {type: Number, default: 0},
         dislikesCount: {type: Number, default: 0},
         myStatus: {type: String, default: 'None'},

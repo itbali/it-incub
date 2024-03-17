@@ -80,7 +80,7 @@ export class CommentService {
         if (!comment) {
             return {error: "not_found"};
         }
-        if (comment.likesInfo.myStatus === likeStatus) {
+        if (comment.extendedLikesInfo.myStatus === likeStatus) {
             return comment;
         }
         return await this.commentRepository.setLike(commentId, userId, likeStatus);
