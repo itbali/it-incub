@@ -5,8 +5,7 @@ import {PostQueryParams} from "../models/posts/query-params";
 
 import {PostDBType, PostsModel} from "../schemas/postDB";
 import {injectable} from "inversify";
-import {UserRepository} from "./user-repository";
-import {jwtService} from "../composition-roots/security-composition";
+import {UserVM} from "../models/users/output";
 
 @injectable()
 export class PostRepository {
@@ -80,13 +79,12 @@ export class PostRepository {
         return deletedPost ? postMapper(deletedPost, userId) : null;
     }
 
-    async setLikeStatus(postId: string, userId: string, likeStatus: "None" | "Like" | "Dislike"): Promise<PostVM | null> {
+    async setLikeStatus(postId: string, user: UserVM, likeStatus: "None" | "Like" | "Dislike"): Promise<PostVM | null> {
         const post = await PostsModel.findOne({_id: postId});
-        const user = await new UserRepository(jwtService).getUserById(userId);
         if (!post) {
             return null;
         }
-        const myStatus = post.extendedLikesInfo.usersLiked?.find(like => like.userId === userId);
+        const myStatus = post.extendedLikesInfo.usersLiked?.find(like => like.userId === user.id);
         if (myStatus?.likeStatus === "Like") {
             post.extendedLikesInfo.likesCount--;
         }
@@ -96,20 +94,20 @@ export class PostRepository {
 
         if (myStatus) {
             likeStatus === "None"
-                ? post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.filter(like => like.userId !== userId)
+                ? post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.filter(like => like.userId !== user.id)
                 : post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!
-                    .map(like => like.userId === userId
+                    .map(like => like.userId === user.id
                         ? {
-                            userId,
+                            userId:user.id,
                             likeStatus,
                             addedAt: like.addedAt,
                             login: like.login
                         }
                         : like);
         } else {
-            likeStatus === "None" &&
+            likeStatus !== "None" &&
             post.extendedLikesInfo.usersLiked?.push({
-                userId,
+                userId: user.id,
                 likeStatus,
                 addedAt: new Date().toISOString(),
                 login: user?.login!
@@ -123,6 +121,6 @@ export class PostRepository {
             post.extendedLikesInfo.dislikesCount++;
         }
         await post.save();
-        return postMapper(post, userId);
+        return postMapper(post, user.id);
     }
 }
