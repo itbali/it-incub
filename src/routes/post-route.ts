@@ -4,13 +4,12 @@ import {postValidation} from "../validators/post-validator";
 import {getUserFromTokenMiddleware, jwtMiddleware} from "../middlewares/auth/jwt-middleware";
 import {commentValidation} from "../validators/comment-validator";
 import {postController} from "../composition-roots/post-composition";
-import {likeStatusValidator} from "../validators/like-status-validator";
 
 export const postRoute = express.Router();
 
 postRoute.get("/", getUserFromTokenMiddleware, postController.getAllPosts.bind(postController));
 postRoute.get("/:id", getUserFromTokenMiddleware, postController.getPost.bind(postController));
-postRoute.post("/:id/like-status", jwtMiddleware, postController.setLikeStatus.bind(postController));
+postRoute.put("/:id/like-status", jwtMiddleware, postController.setLikeStatus.bind(postController));
 postRoute.post("/", authMiddleware, postValidation(), postController.createPost.bind(postController));
 postRoute.put("/:id", authMiddleware, postValidation(), postController.updatePost.bind(postController));
 postRoute.delete("/:id", authMiddleware, postController.deletePost.bind(postController));
