@@ -10,11 +10,11 @@ export type PostVM = {
         likesCount: number,
         dislikesCount: number,
         myStatus: string,
-        newestLikes?: string[]
-        usersLiked?: {
-            userId: string,
-            likeStatus: string,
-        }[],
+        newestLikes?: {
+            userId: string
+            login: string
+            addedAt: string
+        }[]
     }
 }
 

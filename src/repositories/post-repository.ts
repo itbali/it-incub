@@ -5,11 +5,13 @@ import {PostQueryParams} from "../models/posts/query-params";
 
 import {PostDBType, PostsModel} from "../schemas/postDB";
 import {injectable} from "inversify";
+import {UserRepository} from "./user-repository";
+import {jwtService} from "../composition-roots/security-composition";
 
 @injectable()
 export class PostRepository {
 
-    async getAllPosts(sortData: Required<PostQueryParams>, userId?:string): Promise<PostsGetResponse> {
+    async getAllPosts(sortData: Required<PostQueryParams>, userId?: string): Promise<PostsGetResponse> {
         const {sortBy, sortDirection, pageSize, pageNumber} = sortData;
         const postsCount = await PostsModel.countDocuments();
         const posts = await PostsModel
@@ -24,11 +26,13 @@ export class PostRepository {
             page: pageNumber,
             pageSize,
             totalCount: postsCount,
-            items: posts.map(p=>postMapper(p, userId)),
+            items: posts.map(p => postMapper(p, userId)),
         }
     }
 
-    async getAllPostsByBlogId({sortBy, sortDirection, pageSize, pageNumber, blogId}: Required<PostQueryParams> & {blogId: string}, userId?: string): Promise<PostsGetResponse> {
+    async getAllPostsByBlogId({sortBy, sortDirection, pageSize, pageNumber, blogId}: Required<PostQueryParams> & {
+        blogId: string
+    }, userId?: string): Promise<PostsGetResponse> {
         const postsCount = await PostsModel.countDocuments({blogId});
         const posts = await PostsModel
             .find({blogId})
@@ -42,11 +46,11 @@ export class PostRepository {
             page: pageNumber,
             pageSize,
             totalCount: postsCount,
-            items: posts.map(p=>postMapper(p, userId)),
+            items: posts.map(p => postMapper(p, userId)),
         }
     }
 
-    async getPostById(id: string, userId?:string): Promise<PostVM | null> {
+    async getPostById(id: string, userId?: string): Promise<PostVM | null> {
         const post = await PostsModel.findOne({_id: id}).lean();
         return post ? postMapper(post, userId) : null;
     }
@@ -59,7 +63,7 @@ export class PostRepository {
 
     async updatePost({id, title, shortDescription, content, blogId}: PostCreateModel & {
         id: string
-    }, userId?:string): Promise<PostVM | null> {
+    }, userId?: string): Promise<PostVM | null> {
         const updatedPost = await PostsModel.findOneAndUpdate({_id: id}, {
             $set: {
                 title,
@@ -78,29 +82,40 @@ export class PostRepository {
 
     async setLikeStatus(postId: string, userId: string, likeStatus: "None" | "Like" | "Dislike"): Promise<PostVM | null> {
         const post = await PostsModel.findOne({_id: postId});
-        if(!post){
+        const user = await new UserRepository(jwtService).getUserById(userId);
+        if (!post) {
             return null;
         }
         const myStatus = post.extendedLikesInfo.usersLiked?.find(like => like.userId === userId);
-        if(myStatus?.likeStatus === "Like"){
+        if (myStatus?.likeStatus === "Like") {
             post.extendedLikesInfo.likesCount--;
         }
-        if(myStatus?.likeStatus === "Dislike"){
+        if (myStatus?.likeStatus === "Dislike") {
             post.extendedLikesInfo.dislikesCount--;
         }
 
-        if(myStatus){
+        if (myStatus) {
             likeStatus === "None"
                 ? post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.filter(like => like.userId !== userId)
-                : post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.map(like => like.userId === userId ? {userId, likeStatus} : like);
+                : post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.map(like => like.userId === userId ? {
+                    userId,
+                    likeStatus,
+                    addedAt: like.addedAt,
+                    login: like.login
+                } : like);
         } else {
-            post.extendedLikesInfo.usersLiked?.push({userId, likeStatus});
+            post.extendedLikesInfo.usersLiked?.push({
+                userId,
+                likeStatus,
+                addedAt: new Date().toISOString(),
+                login: user?.login!
+            });
         }
 
-        if(likeStatus === "Like"){
+        if (likeStatus === "Like") {
             post.extendedLikesInfo.likesCount++;
         }
-        if(likeStatus === "Dislike"){
+        if (likeStatus === "Dislike") {
             post.extendedLikesInfo.dislikesCount++;
         }
         await post.save();

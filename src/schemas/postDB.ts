@@ -14,6 +14,8 @@ export class PostDBType  {
             dislikesCount: number,
             usersLiked?: {
                 userId: string,
+                login: string,
+                addedAt: string,
                 likeStatus: LikeStatus,
             }[],
         }
@@ -33,6 +35,8 @@ const postsSchema = new mongoose.Schema({
         dislikesCount: {type: Number, default: 0},
         usersLiked: [{
             userId: {type: String, required: true},
+            login: {type: String, required: true},
+            addedAt: {type: String, required: true},
             likeStatus: {type: String, required: true}
         }]
     },

@@ -15,7 +15,11 @@ export const postMapper = (post: WithId<PostDBType>, userId?: string): PostVM =>
             likesCount: post.extendedLikesInfo.likesCount,
             dislikesCount: post.extendedLikesInfo.dislikesCount,
             myStatus: post.extendedLikesInfo.usersLiked?.find(like => like.userId === userId)?.likeStatus || 'None',
-            newestLikes: post.extendedLikesInfo.usersLiked?.filter(like => like.likeStatus === 'Like').map(like => like.userId).slice(0,2) || [],
+            newestLikes: post.extendedLikesInfo.usersLiked?.filter(like => like.likeStatus === 'Like').map(like => ({
+                addedAt: like.addedAt,
+                login: like.login,
+                userId: like.userId
+            })).slice(0,2) || [],
         }
     });
 }
