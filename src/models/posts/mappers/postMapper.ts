@@ -15,7 +15,10 @@ export const postMapper = (post: WithId<PostDBType>, userId?: string): PostVM =>
             likesCount: post.extendedLikesInfo.likesCount,
             dislikesCount: post.extendedLikesInfo.dislikesCount,
             myStatus: post.extendedLikesInfo.usersLiked?.find(like => like.userId === userId)?.likeStatus || 'None',
-            newestLikes: post.extendedLikesInfo.usersLiked?.filter(like => like.likeStatus === 'Like').map(like => ({
+            newestLikes: post.extendedLikesInfo.usersLiked
+                ?.filter(like => like.likeStatus === 'Like')
+                .sort((a, b) => new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime())
+                .map(like => ({
                 addedAt: like.addedAt,
                 login: like.login,
                 userId: like.userId
