@@ -97,13 +97,17 @@ export class PostRepository {
         if (myStatus) {
             likeStatus === "None"
                 ? post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.filter(like => like.userId !== userId)
-                : post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!.map(like => like.userId === userId ? {
-                    userId,
-                    likeStatus,
-                    addedAt: like.addedAt,
-                    login: like.login
-                } : like);
+                : post.extendedLikesInfo.usersLiked = post.extendedLikesInfo.usersLiked!
+                    .map(like => like.userId === userId
+                        ? {
+                            userId,
+                            likeStatus,
+                            addedAt: like.addedAt,
+                            login: like.login
+                        }
+                        : like);
         } else {
+            likeStatus === "None" &&
             post.extendedLikesInfo.usersLiked?.push({
                 userId,
                 likeStatus,

@@ -104,7 +104,7 @@ export class PostService {
         if(!user){
             return null
         }
-        if(likeStatus === "None" || post.extendedLikesInfo.myStatus === likeStatus){
+        if(post.extendedLikesInfo.myStatus === likeStatus){
             return post
         }
         const updatedPost = await this.postRepository.setLikeStatus(postId, userId, likeStatus)
