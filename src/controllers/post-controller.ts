@@ -128,8 +128,8 @@ export class PostController {
     async setLikeStatus(req: RequestWithParamsAndBody<{ id: string }, { likeStatus: string }>, res: Response<number>) {
         const postId = req.params.id
         const status = req.body.likeStatus
-        if (status !== "Like" && status !== "Dislike") {
-            res.sendStatus(400)
+        if (status !== "Like" && status !== "Dislike" && status !== "None") {
+            res.sendStatus(401)
             return;
         }
         const result = await this.postService.setLikeStatus(postId, req.userId!, status);
