@@ -22,7 +22,7 @@ export const postMapper = (post: WithId<PostDBType>, userId?: string): PostVM =>
                 addedAt: like.addedAt,
                 login: like.login,
                 userId: like.userId
-            })).slice(0,2) || [],
+            })).slice(0,3) || [],
         }
     });
 }
