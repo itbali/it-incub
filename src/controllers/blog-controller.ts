@@ -68,7 +68,7 @@ export class BlogController {
             pageNumber: Number(req.query.pageNumber),
             pageSize: Number(req.query.pageSize),
             blogId: req.params.id
-        });
+        }, req.userId || undefined);
         res.send(posts);
     }
 
