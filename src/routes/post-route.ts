@@ -10,7 +10,7 @@ export const postRoute = express.Router();
 
 postRoute.get("/", getUserFromTokenMiddleware, postController.getAllPosts.bind(postController));
 postRoute.get("/:id", getUserFromTokenMiddleware, postController.getPost.bind(postController));
-postRoute.put("/:id/like-status", likeStatusValidator(), jwtMiddleware, postController.setLikeStatus.bind(postController));
+postRoute.put("/:id/like-status",  jwtMiddleware, likeStatusValidator(), postController.setLikeStatus.bind(postController));
 postRoute.post("/", authMiddleware, postValidation(), postController.createPost.bind(postController));
 postRoute.put("/:id", authMiddleware, postValidation(), postController.updatePost.bind(postController));
 postRoute.delete("/:id", authMiddleware, postController.deletePost.bind(postController));
